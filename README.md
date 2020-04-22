@@ -1,3 +1,4 @@
+FORKED FROM https://github.com/Raveler/ffmpeg-cpp
 BE CAREFULL : ALL CHANGES ARE NOW UNDER GPL V3 (file an issue if you need something) ebachard 2020/04/22
 
 # ffmpeg-cpp
