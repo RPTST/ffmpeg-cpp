@@ -32,7 +32,7 @@ Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMin
 
 - [x] read_audio
 - [x] decode_video big_buck_bunny.mp4 results in 1440 grey images (who can be assembled to retrieve the video)
-- [ ] encode_audio (WIP) // status : caught exception (crash in AudioEncoder* encoder = new AudioEncoder(codec, muxer);)
+- [x] encode_audio //**don't forget to install libmp3lame AND to add --enable-libmp3lame at configure time with FFMPEG!**
 - [x] encode_video : output.mpg created and works (no sound though, as expected)
 - [ ] remuxing (WIP)
 - [ ] print_info (WIP)
