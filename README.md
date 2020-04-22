@@ -16,7 +16,7 @@ This will build a .lib file that you can use in your own C++ projects. It will a
 
 ## Linux
 
-I created a CMakefile, and the lib is straight forward. I'll probably add someMakefiles in the demo directory, to test ecery case (muxer, audio extraction, and so on).
+I created a CMakefile from scratch, and the lib is now built straight away. I'll probably add some Makefiles in the demo directory, to test ecery case (muxer, audio extraction, and so on).
 
 ## What works on Linux :
 
