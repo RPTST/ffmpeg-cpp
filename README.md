@@ -1,3 +1,5 @@
+BE CAREFULL : ALL CHANGES ARE NOW UNDER GPL V3 (file an issue if you need something) ebachard 2020/04/22
+
 # ffmpeg-cpp
 A clean C++ wrapper around the ffmpeg libraries which can be used in any C++ project or C# project (with DllImport or CLR). Makes the most commonly used functionality of FFmpeg easily available for any C++ projects with an easy-to-use interface. The full power of FFmpeg compacted in 10 lines of C++ code: if this sounds useful to you, read on!
 
@@ -14,7 +16,28 @@ This will build a .lib file that you can use in your own C++ projects. It will a
 
 ## Linux
 
-Currently, only a Windows environment with Visual Studio is supported. This is simply because I do not have experience with cmake and Linux-projects, since the project itself is fully platform-independent. If anyone is willing to help me out with configuring cmake, please get in touch!
+I created a CMakefile, and the lib is straight forward. I'll probably add someMakefiles in the demo directory, to test ecery case (muxer, audio extraction, and so on).
+
+## What works on Linux :
+
+- [x] cmake
+- [x] libffmpeg-cpp.a is created
+- [x] one can link it
+
+## Demos
+
+Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMint, but whatever the distribution, this should work anywhere
+
+- [x] read_audio
+- [ ] read_video  (WIP)
+- [ ] encode_audio (WIP)
+- [ ] encode_video (WIP)
+- [ ] remuxing (WIP)
+- [ ] print_info (WIP)
+- [ ] difference (WIP)
+- [ ] simple interface (WIP)
+- [ ] example (WIP)
+- [ ] demo (WIP)
 
 # Usage
 
