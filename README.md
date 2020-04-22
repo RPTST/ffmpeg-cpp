@@ -18,11 +18,11 @@ This will build a .lib file that you can use in your own C++ projects. It will a
 
 ## Linux
 
-I created a CMakefile from scratch, and the lib is now built straight away. I'll probably add some Makefiles in the demo directory, to test ecery case (muxer, audio extraction, and so on).
+I created a CMakefile from scratch, and the lib is now built straight away. I'll probably add some Makefiles in the demo directory, to test every case (muxer, audio extraction, and so on).
 
 ## What works on Linux :
-
-- [x] cmake
+  [x] create the makefile (the usual way)
+- [x] make is ok. TODO : fix a bunch of warnings, caused by a prehistoric version of ffmpeg at design time.
 - [x] libffmpeg-cpp.a is created
 - [x] one can link it
 
