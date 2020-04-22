@@ -41,7 +41,7 @@ namespace ffmpegcpp
 		bool wasPrimed = IsPrimed();
 
 		// clean up all the output streams that were added to this muxer.
-		for (int i = 0; i < outputStreams.size(); ++i)
+		for (unsigned int i = 0; i < outputStreams.size(); ++i)
 		{
 			delete outputStreams[i];
 		}
@@ -63,7 +63,7 @@ namespace ffmpegcpp
 		}
 
 		// clean up the queue
-		for (int i = 0; i < packetQueue.size(); ++i)
+		for (unsigned int i = 0; i < packetQueue.size(); ++i)
 		{
 			AVPacket* tmp_pkt = packetQueue[i];
 			av_packet_free(&tmp_pkt);
@@ -103,7 +103,7 @@ namespace ffmpegcpp
 	{
 		if (opened) return true; // we were already opened before - always primed from now on!
 		bool allPrimed = true;
-		for (int i = 0; i < outputStreams.size(); ++i)
+		for (unsigned int i = 0; i < outputStreams.size(); ++i)
 		{
 			if (!outputStreams[i]->IsPrimed()) allPrimed = false;
 		}
@@ -150,7 +150,7 @@ namespace ffmpegcpp
 				printf("After %lu cached packets, we can finally open the container\n", packetQueue.size());
 
 				// flush the queue
-				for (int i = 0; i < packetQueue.size(); ++i)
+				for (unsigned int i = 0; i < packetQueue.size(); ++i)
 				{
 					AVPacket* tmp_pkt = packetQueue[i];
 
@@ -224,7 +224,7 @@ namespace ffmpegcpp
 		// We must be sure to do this because in an extreme case, one entire stream
 		// might be queueing all its packets before we are opened, so it might not
 		// be draining them at all.
-		for (int i = 0; i < outputStreams.size(); ++i)
+		for (unsigned int i = 0; i < outputStreams.size(); ++i)
 		{
 			outputStreams[i]->DrainPacketQueue();
 		}
