@@ -6,7 +6,7 @@ namespace ffmpegcpp
 {
 	FFmpegException::FFmpegException(const char * error) : exception ()
 	{
-                std::string(std::string(error));
+                std::string(error).c_str();
 	}
 
 	FFmpegException::FFmpegException(const char * error, int returnValue)
