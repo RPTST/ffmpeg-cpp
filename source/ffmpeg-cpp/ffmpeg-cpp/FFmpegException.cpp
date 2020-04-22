@@ -6,12 +6,13 @@ namespace ffmpegcpp
 {
 	FFmpegException::FFmpegException(const char * error) : exception ()
 	{
+                std::string(std::string(error));
 	}
 
 	FFmpegException::FFmpegException(const char * error, int returnValue)
 		: exception()
 	{
-			std::string(std::string(error) + ": " + av_make_error_string(this->error, AV_ERROR_MAX_STRING_SIZE, returnValue)).c_str(), returnValue;
+			std::string(std::string(error) + ": " + av_make_error_string(this->error, AV_ERROR_MAX_STRING_SIZE, returnValue)).c_str();
 	}
 }
 
