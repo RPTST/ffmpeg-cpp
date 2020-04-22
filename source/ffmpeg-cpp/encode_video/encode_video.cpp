@@ -32,7 +32,7 @@ int main()
 		// FFmpeg is very good at deducing the file format, even from raw video files,
 		// but if we have something weird, we can specify the properties of the format
 		// in the constructor as commented out below.
-		RawVideoFileSource* videoFile = new RawVideoFileSource("samples/carphone_qcif.y4m", encoder);
+		RawVideoFileSource* videoFile = new RawVideoFileSource("../samples/carphone_qcif.y4m", encoder);
 
 		// Prepare the output pipeline. This will push a small amount of frames to the file sink until it IsPrimed returns true.
 		videoFile->PreparePipeline();
