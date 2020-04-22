@@ -1,8 +1,11 @@
 // MathLibrary.h - Contains declarations of math functions
 #pragma once
 
+#ifdef __linux__
+#define DllExport
+#else
 #define DllExport __declspec(dllexport)
-
+#endif
 
 extern "C" DllExport void* ffmpegCppCreate(const char* outputFileName);
 

@@ -1,18 +1,22 @@
 // AniHub.LipSync.cpp : Defines the exported functions for the DLL application.
 //
 
-#include "SimpleInterface.h"
+#include "simple_interface/SimpleInterface.h"
 
 #include <string>
 #include <iostream>
 #include <stdio.h>
+#ifndef __linux__
 #include <io.h>
 #include <filesystem>
+#else
+#include <experimental/filesystem>
+#endif
 #include <fstream>
 #include <sstream>
 
 #include "ffmpegcpp.h"
-#include "ffmpeg.h"
+#include "ffmpeg-cpp/ffmpeg.h"
 
 using namespace std;
 using namespace ffmpegcpp;

@@ -1,28 +1,42 @@
 #pragma once
 
-#include "ffmpeg.h"
-
-#include "std.h"
+#include "ffmpeg-cpp/ffmpeg.h"
+#include <stdexcept>
 
 namespace ffmpegcpp
 {
-	class FFmpegException : std::exception
+	class FFmpegException : public std::exception
 	{
+	    public:
+		explicit FFmpegException(const char * error);
 
-	public:
+		explicit FFmpegException(const char * error, int returnValue);
 
-		FFmpegException(std::string error);
-
-		FFmpegException(std::string error, int returnValue);
-
-		virtual char const* what() const
+		virtual const char* what() const noexcept
 		{
-			return std::exception::what();
+			return (const char *)error;
 		}
-
-
-	private:
-
+	    private:
 		char error[AV_ERROR_MAX_STRING_SIZE];
 	};
 }
+
+/*
+namespace ffmpegcpp
+{
+	class FFmpegException : public std::exception
+	{
+	    public:
+		FFmpegException(const char * error);
+
+		FFmpegException(const char * error, int returnValue);
+
+		virtual const char* what() const noexcept
+		{
+			return (const char *)error;
+		}
+//	    private:
+		char error[AV_ERROR_MAX_STRING_SIZE];
+	};
+}
+*/

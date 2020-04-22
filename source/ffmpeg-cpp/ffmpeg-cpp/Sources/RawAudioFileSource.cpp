@@ -1,6 +1,6 @@
 #include "RawAudioFileSource.h"
 #include "FFmpegException.h"
-#include "std.h"
+
 
 using namespace std;
 
@@ -14,7 +14,7 @@ namespace ffmpegcpp
 		if (!(file_iformat = av_find_input_format(inputFormat)))
 		{
 			CleanUp();
-			throw FFmpegException("Unknown input format: " + string(inputFormat));
+			throw FFmpegException(std::string("Unknown input format: " + string(inputFormat)).c_str());
 		}
 
 		AVDictionary* format_opts = NULL;

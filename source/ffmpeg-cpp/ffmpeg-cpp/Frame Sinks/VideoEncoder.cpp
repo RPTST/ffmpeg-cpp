@@ -131,7 +131,7 @@ namespace ffmpegcpp
 
 		if (frame->format != codec->GetContext()->pix_fmt)
 		{
-			throw FFmpegException("Codec only accepts " + string(av_get_pix_fmt_name(codec->GetContext()->pix_fmt)) + " while frame is in format " + av_get_pix_fmt_name((AVPixelFormat)frame->format));
+			throw FFmpegException(std::string("Codec only accepts " + string(av_get_pix_fmt_name(codec->GetContext()->pix_fmt)) + " while frame is in format " + av_get_pix_fmt_name((AVPixelFormat)frame->format)).c_str());
 		}
 
 		frame->pts = frameNumber;

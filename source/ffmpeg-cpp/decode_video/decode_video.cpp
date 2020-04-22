@@ -1,7 +1,7 @@
 
 #include <iostream>
 
-#include "ffmpegcpp.h"
+#include "ffmpeg-cpp/ffmpegcpp.h"
 
 using namespace std;
 using namespace ffmpegcpp;
@@ -98,7 +98,7 @@ int main()
 	catch (FFmpegException e)
 	{
 		cerr << "Exception caught!" << endl;
-		cerr << e.what() << endl;
+//		cerr << e.what() << endl;
 		throw e;
 	}
 

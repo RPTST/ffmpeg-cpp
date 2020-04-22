@@ -38,7 +38,7 @@ namespace ffmpegcpp
 		filt_frame = av_frame_alloc();
 		if (!filt_frame)
 		{
-			throw FFmpegException("Could not allocate intermediate video frame for filter");
+			throw FFmpegException(string("Could not allocate intermediate video frame for filter").c_str());
 		}
 
 		try
@@ -47,7 +47,7 @@ namespace ffmpegcpp
 			filter_graph = avfilter_graph_alloc();
 			if (!filter_graph)
 			{
-				throw FFmpegException("Failed to allocate filter graph");
+				throw FFmpegException(std::string(string("Failed to allocate filter graph")).c_str());
 			}
 
 			// create the filter string based on the defined inputs & one output
@@ -59,7 +59,7 @@ namespace ffmpegcpp
 			{
 				if (!inputs[i]->PeekFrame(&frame))
 				{
-					throw new FFmpegException(string("No frame found for input ") + to_string(i));
+					throw new FFmpegException(string(string("No frame found for input ") + to_string(i)).c_str());
 				}
 
 				// get the meta data for this input stream
@@ -91,7 +91,7 @@ namespace ffmpegcpp
 			ret = avfilter_graph_parse2(filter_graph, fullFilterString.c_str(), &gis, &gos);
 			if (ret < 0)
 			{
-				throw FFmpegException("Failed to parse and generate filters", ret);
+				throw FFmpegException(string("Failed to parse and generate filters").c_str(), ret);
 			}
 
 			// we don't use these
@@ -115,7 +115,7 @@ namespace ffmpegcpp
 			// Finally configure (initialize) the graph.
 			if ((ret = avfilter_graph_config(filter_graph, NULL)) < 0)
 			{
-				throw FFmpegException("Failed to configure filter graph", ret);
+				throw FFmpegException(string("Failed to configure filter graph").c_str(), ret);
 			}
 
 			// we configure our output meta data based on the sink's data
@@ -150,7 +150,7 @@ namespace ffmpegcpp
 			uint64_t channelLayout = frame->channel_layout;
 			if (channelLayout == 0) channelLayout = av_get_default_channel_layout(frame->channels);
 			snprintf(args, argsLength,
-				"time_base=%d/%d:sample_rate=%d:sample_fmt=%s:channel_layout=0x%d",
+				"time_base=%d/%d:sample_rate=%d:sample_fmt=%s:channel_layout=0x%lu",
 				metaData->timeBase.num, metaData->timeBase.den, frame->sample_rate,
 				av_get_sample_fmt_name((AVSampleFormat)frame->format), channelLayout);
 		}
@@ -158,7 +158,7 @@ namespace ffmpegcpp
 		// not supported
 		else
 		{
-			throw new FFmpegException(std::string("Media type ") + av_get_media_type_string(metaData->type) + " is not supported by filters.");
+			throw new FFmpegException(std::string(std::string("Media type ") + av_get_media_type_string(metaData->type) + " is not supported by filters.").c_str());
 		}
 	}
 
@@ -167,7 +167,7 @@ namespace ffmpegcpp
 		// this is a video input stream
 		if (mediaType == AVMEDIA_TYPE_VIDEO) return "buffer";
 		else if (mediaType == AVMEDIA_TYPE_AUDIO) return "abuffer";
-		else throw new FFmpegException(std::string("Media type ") + av_get_media_type_string(mediaType) + " is not supported by filters.");
+		else throw new FFmpegException(std::string(std::string("Media type ") + av_get_media_type_string(mediaType) + " is not supported by filters.").c_str());
 	}
 
 	const char* Filter::GetBufferSinkName(AVMediaType mediaType)
@@ -175,7 +175,7 @@ namespace ffmpegcpp
 		// this is a video input stream
 		if (mediaType == AVMEDIA_TYPE_VIDEO) return "buffersink";
 		else if (mediaType == AVMEDIA_TYPE_AUDIO) return "abuffersink";
-		else throw new FFmpegException(std::string("Media type ") + av_get_media_type_string(mediaType) + " is not supported by filters.");
+		else throw new FFmpegException(std::string(std::string("Media type ") + av_get_media_type_string(mediaType) + " is not supported by filters.").c_str());
 	}
 
 	void Filter::DrainInputQueues()
@@ -276,7 +276,7 @@ namespace ffmpegcpp
 			}
 			else if (ret < 0)
 			{
-				throw FFmpegException("Error during filtering", ret);
+				throw FFmpegException(std::string("Error during filtering").c_str(), ret);
 			}
 
 			target->WriteFrame(filt_frame, &outputMetaData);

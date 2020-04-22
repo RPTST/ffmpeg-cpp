@@ -35,12 +35,12 @@ namespace ffmpegcpp
 		info.timeBase = tb;
 
 		AVCodecContext* codecContext = avcodec_alloc_context3(NULL);
-		if (!codecContext) throw new FFmpegException("Failed to allocate temporary codec context.");
+		if (!codecContext) throw new FFmpegException(std::string("Failed to allocate temporary codec context.").c_str());
 		int ret = avcodec_parameters_to_context(codecContext, stream->codecpar);
 		if (ret < 0)
 		{
 			avcodec_free_context(&codecContext);
-			throw new FFmpegException("Failed to read parameters from stream");
+			throw new FFmpegException(std::string("Failed to read parameters from stream").c_str());
 		}
 
 		codecContext->properties = stream->codec->properties;
@@ -52,8 +52,8 @@ namespace ffmpegcpp
 
 		info.bitRate = CalculateBitRate(codecContext);
 
-		AVCodec* codec = CodecDeducer::DeduceDecoder(codecContext->codec_id);
-		info.codec = codec;
+		AVCodec* codecpar = CodecDeducer::DeduceDecoder(codecContext->codec_id);
+		info.codec = codecpar;
 
 		info.sampleRate = codecContext->sample_rate;
 		info.channels = codecContext->channels;

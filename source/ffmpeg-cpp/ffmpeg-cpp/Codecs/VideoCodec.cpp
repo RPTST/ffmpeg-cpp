@@ -1,5 +1,8 @@
 #include "VideoCodec.h"
 #include "FFmpegException.h"
+#ifdef __linux__
+#include <limits>
+#endif
 
 using namespace std;
 
@@ -54,11 +57,11 @@ namespace ffmpegcpp
 	{
 
 		// sanity checks
-		if (!IsPixelFormatSupported(format)) throw FFmpegException("Pixel format " + string(av_get_pix_fmt_name(format)) + " is not supported by codec " + codecContext->codec->name);
-		if (!IsFrameRateSupported(frameRate)) throw FFmpegException("Frame rate " + to_string(frameRate->num) + "/" + to_string(frameRate->den) + " is not supported by codec " + codecContext->codec->name);
+		if (!IsPixelFormatSupported(format)) throw FFmpegException(std::string("Pixel format " + string(av_get_pix_fmt_name(format)) + " is not supported by codec " + codecContext->codec->name).c_str());
+		if (!IsFrameRateSupported(frameRate)) throw FFmpegException(std::string("Frame rate " + to_string(frameRate->num) + "/" + to_string(frameRate->den) + " is not supported by codec " + codecContext->codec->name).c_str());
 
 		// if the codec is not an audio codec, we are doing it wrong!
-		if (codecContext->codec->type != AVMEDIA_TYPE_VIDEO) throw FFmpegException("A video output stream must be initialized with a video codec");
+		if (codecContext->codec->type != AVMEDIA_TYPE_VIDEO) throw FFmpegException(std::string("A video output stream must be initialized with a video codec").c_str());
 
 		// set everything & open
 		codecContext->width = width;
@@ -81,7 +84,7 @@ namespace ffmpegcpp
 	AVPixelFormat VideoCodec::GetDefaultPixelFormat()
 	{
 		const enum AVPixelFormat *p = codecContext->codec->pix_fmts;
-		if (*p == AV_PIX_FMT_NONE) throw FFmpegException("Codec " + string(codecContext->codec->name) + " does not have a default pixel format, you have to specify one");
+		if (*p == AV_PIX_FMT_NONE) throw FFmpegException(std::string("Codec " + string(codecContext->codec->name) + " does not have a default pixel format, you have to specify one").c_str());
 		return *p;
 	}
 

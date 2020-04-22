@@ -1,5 +1,6 @@
 #include "AudioFormatConverter.h"
 #include "FFmpegException.h"
+#include <iostream>
 
 namespace ffmpegcpp
 {
@@ -13,7 +14,8 @@ namespace ffmpegcpp
 		if (!converted_frame)
 		{
 			CleanUp();
-			throw FFmpegException("Error allocating an audio frame");
+                        std::cout << "Error allocating an audio frame" <<  "\n";
+//			throw FFmpegException("Error allocating an audio frame");
 		}
 
 		// calculate the sample count
@@ -34,7 +36,9 @@ namespace ffmpegcpp
 			if (ret < 0)
 			{
 				CleanUp();
-				throw FFmpegException("Error allocating an audio buffer", ret);
+                                std::cout << "Error allocating an audio buffer" <<  "\n";
+//				throw FFmpegException("Error allocating an audio buffer", ret);
+//                                throw FFmpegException;
 			}
 		}
 
@@ -44,7 +48,8 @@ namespace ffmpegcpp
 		if (!tmp_frame)
 		{
 			CleanUp();
-			throw FFmpegException("Error allocating an audio frame");
+                        std::cout << "Error allocating an audio frame" <<  "\n";
+//			throw FFmpegException("Error allocating an audio frame");
 		}
 		tmp_frame->format = codecContext->sample_fmt;
 		tmp_frame->channel_layout = codecContext->channel_layout;
@@ -56,6 +61,7 @@ namespace ffmpegcpp
 		if (!fifo)
 		{
 			CleanUp();
+			std::cout << "Failed to create FIFO queue for audio format converter" << "\n";
 			throw FFmpegException("Failed to create FIFO queue for audio format converter");
 		}
 	}
@@ -94,7 +100,8 @@ namespace ffmpegcpp
 		swr_ctx = swr_alloc();
 		if (!swr_ctx)
 		{
-			throw FFmpegException("Could not allocate resampler context");
+//			throw FFmpegException("Could not allocate resampler context");
+			std::cout << "Could not allocate resampler context" << "\n";
 		}
 
 		// set options
@@ -111,7 +118,8 @@ namespace ffmpegcpp
 		int ret;
 		if ((ret = swr_init(swr_ctx)) < 0)
 		{
-			throw FFmpegException("Failed to initialize the resampling context", ret);
+//			throw FFmpegException("Failed to initialize the resampling context", ret);
+			std::cout << "Failed to create FIFO queue for audio format converter" << "\n";
 		}
 
 	}
@@ -129,7 +137,8 @@ namespace ffmpegcpp
 		ret = swr_convert_frame(swr_ctx, tmp_frame, frame);
 		if (ret < 0)
 		{
-			throw FFmpegException("Error while converting audio frame to destination format", ret);
+//			throw FFmpegException("Error while converting audio frame to destination format", ret);
+			std::cout << "Error while converting audio frame to destination format" << "\n";
 		}
 
 		while (tmp_frame->nb_samples > 0)
@@ -138,7 +147,8 @@ namespace ffmpegcpp
 			ret = swr_convert_frame(swr_ctx, tmp_frame, NULL);
 			if (ret < 0)
 			{
-				throw FFmpegException("Error while converting audio frame to destination format", ret);
+//				throw FFmpegException("Error while converting audio frame to destination format", ret);
+			std::cout << "Error while converting audio frame to destination format" << "\n";
 			}
 		}
 
@@ -163,13 +173,15 @@ namespace ffmpegcpp
 		int ret;
 		if ((ret = av_audio_fifo_realloc(fifo, av_audio_fifo_size(fifo) + frame->nb_samples)) < 0)
 		{
-			throw FFmpegException("Could not reallocate FIFO", ret);
+//			throw FFmpegException("Could not reallocate FIFO", ret);
+			std::cout << "Could not reallocate FIFO" << "\n";
 		}
 
 		/* Store the new samples in the FIFO buffer. */
 		if (av_audio_fifo_write(fifo, (void **)frame->extended_data, frame->nb_samples) < frame->nb_samples)
 		{
-			throw FFmpegException("Could not write data to FIFO");
+//			throw FFmpegException("Could not write data to FIFO");
+			std::cout << "Could not write data to FIFO" << "\n";
 		}
 	}
 
@@ -187,7 +199,8 @@ namespace ffmpegcpp
 		int ret;
 		if ((ret = av_audio_fifo_read(fifo, (void **)converted_frame->data, frame_size)) < frame_size)
 		{
-			throw FFmpegException("Could not read data from FIFO", ret);
+//			throw FFmpegException("Could not read data from FIFO", ret);
+			std::cout << "Could not read data to FIFO" << "\n";
 		}
 
 		// send the frame to the encoder
@@ -209,7 +222,8 @@ namespace ffmpegcpp
 		int ret = av_frame_make_writable(converted_frame);
 		if (ret < 0)
 		{
-			throw FFmpegException("Failed to make audio frame writable", ret);
+//			throw FFmpegException("Failed to make audio frame writable", ret);
+			std::cout << "Failed to make audio frame writable" << "\n";
 		}
 
 	}

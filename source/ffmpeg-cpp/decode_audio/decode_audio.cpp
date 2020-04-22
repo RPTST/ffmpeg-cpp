@@ -1,7 +1,7 @@
 
 #include <iostream>
 
-#include "ffmpegcpp.h"
+#include "ffmpeg-cpp/ffmpegcpp.h"
 
 using namespace std;
 using namespace ffmpegcpp;
@@ -61,7 +61,7 @@ int main()
 	try
 	{
 		// Load this container file so we can extract audio from it.
-		Demuxer* demuxer = new Demuxer("samples/big_buck_bunny.mp4");
+		Demuxer* demuxer = new Demuxer("big_buck_bunny.mp4");
 
 		// Create a file sink that will just output the raw audio data.
 		RawAudioFileSink* fileSink = new RawAudioFileSink("rawaudio");
@@ -84,13 +84,13 @@ int main()
 	}
 	catch (FFmpegException e)
 	{
+
 		cerr << "Exception caught!" << endl;
-		cerr << e.what() << endl;
+//		cerr << e.what() << endl;
 		throw e;
 	}
-
-	cout << "Decoding complete!" << endl;
-	cout << "Press any key to continue..." << endl;
+	std::cout << "Decoding complete!" << endl;
+	std::cout << "Press any key to continue..." << endl;
 
 	getchar();
 }

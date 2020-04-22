@@ -16,7 +16,7 @@ namespace ffmpegcpp
 		if (!codec)
 		{
 			CleanUp();
-			throw FFmpegException("Failed to find codec for stream " + to_string(stream->index));
+			throw FFmpegException(std::string("Failed to find codec for stream " + to_string(stream->index)).c_str());
 		}
 
 		// Allocate a codec context for the decoder
@@ -24,7 +24,7 @@ namespace ffmpegcpp
 		if (!codecContext)
 		{
 			CleanUp();
-			throw FFmpegException("Failed to allocate the codec context for " + string(codec->name));
+			throw FFmpegException(std::string("Failed to allocate the codec context for " + string(codec->name)).c_str());
 		}
 
 		codecContext->framerate = stream->avg_frame_rate;
@@ -33,7 +33,7 @@ namespace ffmpegcpp
 		int ret;
 		if ((ret = avcodec_parameters_to_context(codecContext, stream->codecpar)) < 0)
 		{
-			throw FFmpegException("Failed to copy " + string(codec->name) + " codec parameters to decoder context", ret);
+			throw FFmpegException(std::string("Failed to copy " + string(codec->name) + " codec parameters to decoder context").c_str(), ret);
 		}
 
 		// before we open it, we let our subclasses configure the codec context as well
@@ -42,7 +42,7 @@ namespace ffmpegcpp
 		// Init the decoders
 		if ((ret = avcodec_open2(codecContext, codec, NULL)) < 0)
 		{
-			throw FFmpegException("Failed to open codec " + string(codec->name), ret);
+			throw FFmpegException(std::string("Failed to open codec " + string(codec->name)).c_str(), ret);
 		}
 
 		// calculate the "correct" time_base
@@ -55,7 +55,7 @@ namespace ffmpegcpp
 		frame = av_frame_alloc();
 		if (!frame)
 		{
-			throw FFmpegException("Could not allocate frame");
+			throw FFmpegException(std::string("Could not allocate frame").c_str());
 		}
 	}
 
@@ -130,7 +130,7 @@ namespace ffmpegcpp
 		ret = avcodec_send_packet(codecContext, pkt);
 		if (ret < 0)
 		{
-			throw FFmpegException("Error submitting the packet to the decoder", ret);
+			throw FFmpegException(std::string("Error submitting the packet to the decoder").c_str(), ret);
 		}
 
 		/* read all the output frames (in general there may be any number of them */
@@ -141,7 +141,7 @@ namespace ffmpegcpp
 				return;
 			else if (ret < 0)
 			{
-				throw FFmpegException("Error during decoding", ret);
+				throw FFmpegException(std::string("Error during decoding").c_str(), ret);
 			}
 
 			// put default settings from the stream into the frame

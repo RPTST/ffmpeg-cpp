@@ -129,11 +129,11 @@ namespace ffmpegcpp
 	{
 
 		// do some sanity checks
-		if (!IsFormatSupported(format)) throw FFmpegException("Sample format " + string(av_get_sample_fmt_name(format)) + " is not supported by codec " + codecContext->codec->name);
-		if (!IsSampleRateSupported(sampleRate)) throw FFmpegException("Sample rate " + to_string(sampleRate) + " is not supported by codec " + codecContext->codec->name);
+		if (!IsFormatSupported(format)) throw FFmpegException(std::string("Sample format " + string(av_get_sample_fmt_name(format)) + " is not supported by codec " + codecContext->codec->name).c_str());
+		if (!IsSampleRateSupported(sampleRate)) throw FFmpegException(std::string("Sample rate " + to_string(sampleRate) + " is not supported by codec " + codecContext->codec->name).c_str());
 
 		// if the codec is not an audio codec, we are doing it wrong!
-		if (codecContext->codec->type != AVMEDIA_TYPE_AUDIO) throw FFmpegException("An audio output stream must be initialized with an audio codec");
+		if (codecContext->codec->type != AVMEDIA_TYPE_AUDIO) throw FFmpegException(std::string("An audio output stream must be initialized with an audio codec").c_str());
 
 		// set all data
 		codecContext->bit_rate = bitRate;

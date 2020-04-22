@@ -10,7 +10,7 @@ namespace ffmpegcpp
 		AVCodec* codec = avcodec_find_encoder_by_name(codecName);
 		if (!codec)
 		{
-			throw FFmpegException("Codec " + string(codecName) + " not found");
+			throw FFmpegException(std::string("Codec " + string(codecName) + " not found").c_str());
 		}
 		return codec;
 	}
@@ -20,7 +20,7 @@ namespace ffmpegcpp
 		AVCodec* codec = avcodec_find_encoder(codecId);
 		if (!codec)
 		{
-			throw FFmpegException("Codec with id " + to_string((int)codecId) + " not found");
+			throw FFmpegException(std::string("Codec with id " + to_string((int)codecId) + " not found").c_str());
 		}
 		return codec;
 	}
@@ -30,7 +30,7 @@ namespace ffmpegcpp
 		AVCodec* codec = avcodec_find_decoder_by_name(codecName);
 		if (!codec)
 		{
-			throw FFmpegException("Codec " + string(codecName) + " not found");
+			throw FFmpegException(std::string("Codec " + string(codecName) + " not found").c_str());
 		}
 		return codec;
 	}
@@ -41,13 +41,13 @@ namespace ffmpegcpp
 		AVCodec* codec = avcodec_find_decoder(codecId);
 		if (!codec)
 		{
-			throw FFmpegException("Codec with id " + to_string((int)codecId) + " not found");
+			throw FFmpegException(std::string("Codec with id " + to_string((int)codecId) + " not found").c_str());
 		}
 		return codec;
 	}
 
 	AVCodec* CodecDeducer::DeduceEncoderFromFilename(const char* fileName)
 	{
-		throw FFmpegException("Not implemented yet");
+		throw FFmpegException(std::string("Not implemented yet").c_str());
 	}
 }

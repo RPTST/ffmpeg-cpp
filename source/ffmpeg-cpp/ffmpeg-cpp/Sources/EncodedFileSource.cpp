@@ -83,37 +83,37 @@ namespace ffmpegcpp
 		parser = av_parser_init(codec->id);
 		if (!parser)
 		{
-			throw FFmpegException("Parser for codec not found " + string(codec->name));
+			throw FFmpegException(std::string("Parser for codec not found " + string(codec->name)).c_str());
 		}
 
 		codecContext = avcodec_alloc_context3(codec);
 		if (!codecContext)
 		{
-			throw FFmpegException("Failed to allocate context for codec " + string(codec->name));
+			throw FFmpegException(std::string("Failed to allocate context for codec " + string(codec->name)).c_str());
 		}
 
 		/* open it */
 		if (int ret = avcodec_open2(codecContext, codec, NULL) < 0)
 		{
-			throw FFmpegException("Failed to open context for codec " + string(codec->name), ret);
+			throw FFmpegException(std::string("Failed to open context for codec " + string(codec->name)).c_str(), ret);
 		}
 
 		file = fopen(inFileName, "rb");
 		if (!file)
 		{
-			throw FFmpegException("Could not open file " + string(inFileName));
+			throw FFmpegException(std::string("Could not open file " + string(inFileName)).c_str());
 		}
 
 		decoded_frame = av_frame_alloc();
 		if (!decoded_frame)
 		{
-			throw FFmpegException("Could not allocate video frame");
+			throw FFmpegException(std::string("Could not allocate video frame").c_str());
 		}
 
 		pkt = av_packet_alloc();
 		if (!pkt)
 		{
-			throw FFmpegException("Failed to allocate packet");
+			throw FFmpegException(std::string("Failed to allocate packet").c_str());
 		}
 
 		// based on the codec, we use different buffer sizes
@@ -130,7 +130,7 @@ namespace ffmpegcpp
 		}
 		else
 		{
-			throw FFmpegException("Codec " + string(codecContext->codec->name) + " is not supported as a RawFileSource");
+			throw FFmpegException(std::string("Codec " + string(codecContext->codec->name) + " is not supported as a RawFileSource").c_str());
 		}
 
 		buffer = new uint8_t[bufferSize + AV_INPUT_BUFFER_PADDING_SIZE];
@@ -172,7 +172,7 @@ namespace ffmpegcpp
 				data, data_size, AV_NOPTS_VALUE, AV_NOPTS_VALUE, 0);
 			if (ret < 0)
 			{
-				throw FFmpegException("Error while parsing file", ret);
+				throw FFmpegException(std::string("Error while parsing file").c_str(), ret);
 			}
 			data += ret;
 			data_size -= ret;
@@ -206,7 +206,7 @@ namespace ffmpegcpp
 		ret = avcodec_send_packet(codecContext, pkt);
 		if (ret < 0)
 		{
-			throw FFmpegException("Error submitting the packet to the decoder", ret);
+			throw FFmpegException(std::string("Error submitting the packet to the decoder").c_str(), ret);
 		}
 
 		/* read all the output frames (in general there may be any number of them */
@@ -217,7 +217,7 @@ namespace ffmpegcpp
 				return;
 			else if (ret < 0)
 			{
-				throw FFmpegException("Error during decoding", ret);
+				throw FFmpegException(std::string("Error during decoding").c_str(), ret);
 			}
 
 			if (metaData == nullptr)

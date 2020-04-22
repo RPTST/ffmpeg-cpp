@@ -1,9 +1,12 @@
 #pragma once
 
-#include "ffmpeg.h"
+#include "ffmpeg-cpp/ffmpeg.h"
 #include "VideoStreamInfo.h"
 #include "AudioStreamInfo.h"
-#include "std.h"
+
+#ifdef __linux__
+#include <vector>
+#endif
 
 namespace ffmpegcpp
 {

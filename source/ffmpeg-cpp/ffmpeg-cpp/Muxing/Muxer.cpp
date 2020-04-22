@@ -23,7 +23,7 @@ namespace ffmpegcpp
 		}
 		if (!containerContext)
 		{
-			throw FFmpegException("Could not allocate container context for " + this->fileName);
+			throw FFmpegException(std::string("Could not allocate container context for " + this->fileName).c_str());
 		}
 
 		// the format of the container - not necessarily the same as the fileName suggests, see above
@@ -83,13 +83,13 @@ namespace ffmpegcpp
 
 	void Muxer::AddOutputStream(OutputStream* outputStream)
 	{
-		if (opened) throw FFmpegException("You cannot open a new stream after something was written to the muxer");
+		if (opened) throw FFmpegException(std::string("You cannot open a new stream after something was written to the muxer").c_str());
 
 		// create an internal stream and pass it on
 		AVStream* stream = avformat_new_stream(containerContext, NULL);
 		if (!stream)
 		{
-			throw FFmpegException("Could not allocate stream for container " + string(containerContext->oformat->name));
+			throw FFmpegException(std::string("Could not allocate stream for container " + string(containerContext->oformat->name)).c_str());
 		}
 
 		stream->id = containerContext->nb_streams - 1;
@@ -128,14 +128,14 @@ namespace ffmpegcpp
 		// pushes one frame down the pipeline so that the output can be configured properly.
 		if (!opened)
 		{
-			throw FFmpegException("You cannot submit a packet to the muxer until all output streams are fully primed!");
+			throw FFmpegException(std::string("You cannot submit a packet to the muxer until all output streams are fully primed!").c_str());
 		}
 
 		// submit this packet
 		int ret = av_interleaved_write_frame(containerContext, pkt);
 		if (ret < 0)
 		{
-			throw FFmpegException("Error while writing frame to output container", ret);
+			throw FFmpegException(std::string("Error while writing frame to output container").c_str(), ret);
 		}
 
 		return;
@@ -147,7 +147,7 @@ namespace ffmpegcpp
 			{
 				Open();
 				opened = true;
-				printf("After %d cached packets, we can finally open the container\n", packetQueue.size());
+				printf("After %lu cached packets, we can finally open the container\n", packetQueue.size());
 
 				// flush the queue
 				for (int i = 0; i < packetQueue.size(); ++i)
@@ -158,7 +158,7 @@ namespace ffmpegcpp
 					int ret = av_interleaved_write_frame(containerContext, tmp_pkt);
 					if (ret < 0)
 					{
-						throw FFmpegException("Error while writing frame to output container", ret);
+						throw FFmpegException(std::string("Error while writing frame to output container").c_str(), ret);
 					}
 
 					av_packet_unref(tmp_pkt);
@@ -173,7 +173,7 @@ namespace ffmpegcpp
 				AVPacket* tmp_pkt = av_packet_alloc();
 				if (!tmp_pkt)
 				{
-					throw FFmpegException("Failed to allocate packet");
+					throw FFmpegException(std::string("Failed to allocate packet").c_str());
 				}
 				av_packet_ref(tmp_pkt, pkt);
 				packetQueue.push_back(tmp_pkt);
@@ -186,7 +186,7 @@ namespace ffmpegcpp
 			int ret = av_interleaved_write_frame(containerContext, pkt);
 			if (ret < 0)
 			{
-				throw FFmpegException("Error while writing frame to output container", ret);
+				throw FFmpegException(std::string("Error while writing frame to output container").c_str(), ret);
 			}
 		}
 
@@ -200,7 +200,7 @@ namespace ffmpegcpp
 			int ret = avio_open(&containerContext->pb, fileName.c_str(), AVIO_FLAG_WRITE);
 			if (ret < 0)
 			{
-				throw FFmpegException("Could not open file for container " + fileName, ret);
+				throw FFmpegException(std::string("Could not open file for container " + fileName).c_str(), ret);
 			}
 		}
 
@@ -208,7 +208,7 @@ namespace ffmpegcpp
 		int ret = avformat_write_header(containerContext, NULL);
 		if (ret < 0)
 		{
-			throw FFmpegException("Error when writing header to output file " + fileName, ret);
+			throw FFmpegException(std::string("Error when writing header to output file " + fileName).c_str(), ret);
 		}
 	}
 
@@ -217,7 +217,7 @@ namespace ffmpegcpp
 		// if some of the output streams weren't primed, we cannot finish this process
 		if (!IsPrimed())
 		{
-			throw FFmpegException("You cannot close a muxer when one of the streams wasn't primed. You need to make sure all streams are primed before closing the muxer.");
+			throw FFmpegException(std::string("You cannot close a muxer when one of the streams wasn't primed. You need to make sure all streams are primed before closing the muxer.").c_str());
 		}
 
 		// Make sure we drain all the output streams before we write the first packet.

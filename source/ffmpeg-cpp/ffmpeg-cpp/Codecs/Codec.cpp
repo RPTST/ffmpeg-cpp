@@ -46,7 +46,7 @@ namespace ffmpegcpp
 		if (!codecContext)
 		{
 			CleanUp();
-			throw FFmpegException("Could not allocate video codec context for codec " + string(codec->name));
+			throw FFmpegException(std::string("Could not allocate video codec context for codec " + string(codec->name)).c_str());
 		}
 
 		// copy the type
@@ -67,13 +67,13 @@ namespace ffmpegcpp
 	{
 		if (opened)
 		{
-			throw FFmpegException("You can only open a codec once");
+			throw FFmpegException(std::string("You can only open a codec once").c_str());
 		}
 
 		int ret = avcodec_open2(codecContext, codecContext->codec, NULL);
 		if (ret < 0)
 		{
-			throw FFmpegException("Could not open codecContext for codec", ret);
+			throw FFmpegException(std::string("Could not open codecContext for codec").c_str(), ret);
 		}
 
 		opened = true;

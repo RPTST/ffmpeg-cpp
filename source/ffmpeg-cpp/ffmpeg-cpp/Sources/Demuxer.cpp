@@ -23,14 +23,14 @@ namespace ffmpegcpp
 		if ((ret = avformat_open_input(&containerContext, fileName, inputFormat, &format_opts)) < 0)
 		{
 			CleanUp();
-			throw FFmpegException("Failed to open input container " + string(fileName), ret);
+			throw FFmpegException(std::string("Failed to open input container " + string(fileName)).c_str(), ret);
 		}
 
 		// retrieve stream information
 		if (ret = (avformat_find_stream_info(containerContext, NULL)) < 0)
 		{
 			CleanUp();
-			throw FFmpegException("Failed to read streams from " + string(fileName), ret);
+			throw FFmpegException(std::string("Failed to read streams from " + string(fileName)).c_str(), ret);
 		}
 
 		inputStreams = new InputStream*[containerContext->nb_streams];
@@ -44,7 +44,7 @@ namespace ffmpegcpp
 		if (!pkt)
 		{
 			CleanUp();
-			throw FFmpegException("Failed to create packet for input stream");
+			throw FFmpegException(std::string("Failed to create packet for input stream").c_str());
 		}
 		av_init_packet(pkt);
 		pkt->data = NULL;
@@ -87,7 +87,7 @@ namespace ffmpegcpp
 		int ret = av_find_best_stream(containerContext, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
 		if (ret < 0)
 		{
-			throw FFmpegException("Could not find " + string(av_get_media_type_string(AVMEDIA_TYPE_AUDIO)) + " stream in input file " + fileName, ret);
+			throw FFmpegException(std::string("Could not find " + string(av_get_media_type_string(AVMEDIA_TYPE_AUDIO)) + " stream in input file " + fileName).c_str(), ret);
 		}
 		int streamIndex = ret;
 		return DecodeAudioStream(streamIndex, frameSink);
@@ -98,7 +98,7 @@ namespace ffmpegcpp
 		int ret = av_find_best_stream(containerContext, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
 		if (ret < 0)
 		{
-			throw FFmpegException("Could not find " + string(av_get_media_type_string(AVMEDIA_TYPE_VIDEO)) + " stream in input file " + fileName, ret);
+			throw FFmpegException(std::string("Could not find " + string(av_get_media_type_string(AVMEDIA_TYPE_VIDEO)) + " stream in input file " + fileName).c_str(), ret);
 		}
 		int streamIndex = ret;
 		return DecodeVideoStream(streamIndex, frameSink);
@@ -109,7 +109,7 @@ namespace ffmpegcpp
 		// each input stream can only be used once
 		if (inputStreams[streamIndex] != nullptr)
 		{
-			throw FFmpegException("That stream is already tied to a frame sink, you cannot process the same stream multiple times");
+			throw FFmpegException(std::string("That stream is already tied to a frame sink, you cannot process the same stream multiple times").c_str());
 		}
 
 		// create the stream
@@ -125,7 +125,7 @@ namespace ffmpegcpp
 		// each input stream can only be used once
 		if (inputStreams[streamIndex] != nullptr)
 		{
-			throw FFmpegException("That stream is already tied to a frame sink, you cannot process the same stream multiple times");
+			throw FFmpegException(std::string("That stream is already tied to a frame sink, you cannot process the same stream multiple times").c_str());
 		}
 
 		// create the stream
@@ -232,7 +232,7 @@ namespace ffmpegcpp
 		// error
 		if (ret < 0)
 		{
-			throw FFmpegException("Error during demuxing", ret);
+			throw FFmpegException(std::string("Error during demuxing").c_str(), ret);
 		}
 
 		// decode the finished packet
