@@ -29,7 +29,7 @@ int main()
 		Filter* filter = new Filter("scale=640:150,transpose=cclock,vignette", encoder);
 
 		// Load a video from a container and send it to the filter first.
-		Demuxer* demuxer = new Demuxer("samples/big_buck_bunny.mp4");
+		Demuxer* demuxer = new Demuxer("../samples/big_buck_bunny.mp4");
 		demuxer->DecodeBestVideoStream(filter);
 
 		// Prepare the output pipeline. This will push a small amount of frames to the file sink until it IsPrimed returns true.
