@@ -8,7 +8,11 @@ endif()
   
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
-#set(CMAKE_CXX_FLAGS "-Wall -Wextra")
+
+if (CMAKE_SYSTEM MATCHES Linux)
+    set(CMAKE_CXX_FLAGS "-Wall -Wextra -DLinux")
+endif()
+
 #set(CMAKE_CXX_FLAGS_DEBUG "-g")
 #set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
