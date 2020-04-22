@@ -76,7 +76,7 @@ void CleanUp(Context* ctx)
 
 	if (ctx->error != nullptr) delete ctx->error;
 
-	for (int i = 0; i < ctx->uniqueDemuxers.size(); ++i)
+	for (unsigned int i = 0; i < ctx->uniqueDemuxers.size(); ++i)
 	{
 		delete ctx->uniqueDemuxers[i];
 	}
@@ -86,7 +86,7 @@ void CleanUp(Context* ctx)
 
 Demuxer* GetExistingDemuxer(Context* ctx, const char* fileName)
 {
-	for (int i = 0; i < ctx->uniqueDemuxers.size(); ++i)
+	for (unsigned int i = 0; i < ctx->uniqueDemuxers.size(); ++i)
 	{
 		if (string(ctx->uniqueDemuxers[i]->GetFileName()) == string(fileName)) return ctx->uniqueDemuxers[i];
 	}
@@ -202,7 +202,7 @@ void ffmpegCppGenerate(void* handle)
 		}
 
 		// now go over all the streams and process all frames
-		for (int i = 0; i < ctx->uniqueDemuxers.size(); ++i)
+		for (unsigned int i = 0; i < ctx->uniqueDemuxers.size(); ++i)
 		{
 			ctx->uniqueDemuxers[i]->PreparePipeline();
 		}
@@ -211,7 +211,7 @@ void ffmpegCppGenerate(void* handle)
 		// to start reading frames from the input, decoding them, optionally filtering them,
 		// encoding them and writing them to the final container.
 		// This can be interweaved if you want to.
-		for (int i = 0; i < ctx->uniqueDemuxers.size(); ++i)
+		for (unsigned int i = 0; i < ctx->uniqueDemuxers.size(); ++i)
 		{
 			Demuxer* demuxer = ctx->uniqueDemuxers[i];
 			while (!demuxer->IsDone()) demuxer->Step();
