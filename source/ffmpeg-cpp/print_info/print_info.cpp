@@ -21,7 +21,7 @@ int main()
 		cout << "Input " << info.format->name << " from '" << fileName << "'" << endl;
 
 		cout << "Video streams:" << endl;
-		for (int i = 0; i < info.videoStreams.size(); ++i)
+		for (unsigned int i = 0; i < info.videoStreams.size(); ++i)
 		{
 			VideoStreamInfo stream = info.videoStreams[i];
 			cout << "Stream #" << (i + 1)
@@ -36,7 +36,7 @@ int main()
 		}
 
 		cout << "Audio streams:" << endl;
-		for (int i = 0; i < info.audioStreams.size(); ++i)
+		for (unsigned int i = 0; i < info.audioStreams.size(); ++i)
 		{
 			AudioStreamInfo stream = info.audioStreams[i];
 			cout << "Stream #" << (i + 1)
