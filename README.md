@@ -1,3 +1,5 @@
+BE CAREFULL : ALL CHANGES ARE NOW UNDER GPL V3 (as me if you need something) ebachard 2020/04/22
+
 # ffmpeg-cpp
 A clean C++ wrapper around the ffmpeg libraries which can be used in any C++ project or C# project (with DllImport or CLR). Makes the most commonly used functionality of FFmpeg easily available for any C++ projects with an easy-to-use interface. The full power of FFmpeg compacted in 10 lines of C++ code: if this sounds useful to you, read on!
 
