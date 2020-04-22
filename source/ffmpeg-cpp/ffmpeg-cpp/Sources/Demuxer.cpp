@@ -27,14 +27,14 @@ namespace ffmpegcpp
 		}
 
 		// retrieve stream information
-		if (ret = (avformat_find_stream_info(containerContext, NULL)) < 0)
+		if ( (ret = (avformat_find_stream_info(containerContext, NULL))) < 0)
 		{
 			CleanUp();
 			throw FFmpegException(std::string("Failed to read streams from " + string(fileName)).c_str(), ret);
 		}
 
 		inputStreams = new InputStream*[containerContext->nb_streams];
-		for (int i = 0; i < containerContext->nb_streams; ++i)
+		for (unsigned int i = 0; i < containerContext->nb_streams; ++i)
 		{
 			inputStreams[i] = nullptr;
 		}
@@ -60,7 +60,7 @@ namespace ffmpegcpp
 	{
 		if (inputStreams != nullptr)
 		{
-			for (int i = 0; i < containerContext->nb_streams; ++i)
+			for (unsigned int i = 0; i < containerContext->nb_streams; ++i)
 			{
 				if (inputStreams[i] != nullptr)
 				{
@@ -147,6 +147,7 @@ namespace ffmpegcpp
 
 		AVStream* stream = containerContext->streams[streamIndex];
 		AVCodec* codec = CodecDeducer::DeduceDecoder(stream->codecpar->codec_id);
+
 		if (codec == nullptr) return nullptr; // no codec found - we can't really do anything with this stream!
 		switch (codec->type)
 		{
@@ -155,6 +156,8 @@ namespace ffmpegcpp
 			break;
 		case AVMEDIA_TYPE_AUDIO:
 			inputStreams[streamIndex] = new AudioInputStream(containerContext, stream);
+			break;
+		default:
 			break;
 		}
 
@@ -165,7 +168,7 @@ namespace ffmpegcpp
 	InputStream* Demuxer::GetInputStreamById(int streamId)
 	{
 		// map the stream id to an index by going over all the streams and comparing the id
-		for (int i = 0; i < containerContext->nb_streams; ++i)
+		for (unsigned int i = 0; i < containerContext->nb_streams; ++i)
 		{
 			AVStream* stream = containerContext->streams[i];
 			if (stream->id == streamId) return GetInputStream(i);
@@ -184,7 +187,7 @@ namespace ffmpegcpp
 
 			// see if all input streams are primed
 			allPrimed = true;
-			for (int i = 0; i < containerContext->nb_streams; ++i)
+			for (unsigned int i = 0; i < containerContext->nb_streams; ++i)
 			{
 				InputStream* stream = inputStreams[i];
 				if (stream != nullptr)
@@ -211,7 +214,7 @@ namespace ffmpegcpp
 		{
 			pkt->data = NULL;
 			pkt->size = 0;
-			for (int i = 0; i < containerContext->nb_streams; ++i)
+			for (unsigned int i = 0; i < containerContext->nb_streams; ++i)
 			{
 				InputStream* stream = inputStreams[i];
 				if (stream != nullptr)
@@ -270,7 +273,7 @@ namespace ffmpegcpp
 
 
 		// go over all streams and get their info
-		for (int i = 0; i < containerContext->nb_streams; ++i)
+		for (unsigned int i = 0; i < containerContext->nb_streams; ++i)
 		{
 			InputStream* stream = GetInputStream(i);
 			if (stream == nullptr) continue; // no valid stream
@@ -283,7 +286,7 @@ namespace ffmpegcpp
 	int Demuxer::GetFrameCount(int streamId)
 	{
 		// Make sure all streams exist, so we can query them later.
-		for (int i = 0; i < containerContext->nb_streams; ++i)
+		for (unsigned int i = 0; i < containerContext->nb_streams; ++i)
 		{
 			GetInputStream(i);
 		}
