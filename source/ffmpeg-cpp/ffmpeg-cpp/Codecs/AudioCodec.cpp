@@ -1,5 +1,7 @@
 #include "AudioCodec.h"
 #include "FFmpegException.h"
+#include <iostream>
+#include <cstdio>
 
 using namespace std;
 
@@ -8,11 +10,18 @@ namespace ffmpegcpp
 	AudioCodec::AudioCodec(const char* codecName)
 		: Codec(codecName)
 	{
+#ifdef DEBUG
+            std::cout << "codecName =  "<< codecName << "\n";
+#endif
 	}
 
 	AudioCodec::AudioCodec(AVCodecID codecId)
 		: Codec(codecId)
 	{
+#ifdef DEBUG
+            std::cout << "codecId =  "<< codecId << "\n";
+#endif
+
 	}
 
 	AudioCodec::~AudioCodec()
@@ -127,7 +136,9 @@ namespace ffmpegcpp
 
 	OpenCodec* AudioCodec::Open(int bitRate, AVSampleFormat format, int sampleRate)
 	{
-
+#ifdef DEBUG
+        std::cout << "I'm at  : " << __FILE__ << __func__ << " bitRate : " << bitRate << " format : "  << format << "sampleRate : " << sampleRate << "\n";
+#endif
 		// do some sanity checks
 		if (!IsFormatSupported(format)) throw FFmpegException(std::string("Sample format " + string(av_get_sample_fmt_name(format)) + " is not supported by codec " + codecContext->codec->name).c_str());
 		if (!IsSampleRateSupported(sampleRate)) throw FFmpegException(std::string("Sample rate " + to_string(sampleRate) + " is not supported by codec " + codecContext->codec->name).c_str());
@@ -148,6 +159,10 @@ namespace ffmpegcpp
 
 		// default flags
 		codecContext->flags = 0;
+
+#ifdef DEBUG
+        std::cout << "done ..." << "\n";
+#endif
 
 		// open
 		return Codec::Open();
