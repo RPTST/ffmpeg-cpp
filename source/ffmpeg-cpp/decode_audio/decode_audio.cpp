@@ -86,11 +86,7 @@ int main()
 	{
 
 		cerr << "Exception caught!" << endl;
-//		cerr << e.what() << endl;
 		throw e;
 	}
 	std::cout << "Decoding complete!" << endl;
-	std::cout << "Press any key to continue..." << endl;
-
-	getchar();
 }
