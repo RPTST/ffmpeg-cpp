@@ -79,7 +79,7 @@ namespace ffmpegcpp
 
 	bool AudioCodec::IsChannelsSupported(int channels)
 	{
-		int64_t channelLayout = av_get_default_channel_layout(channels);
+		unsigned long int channelLayout = av_get_default_channel_layout(channels);
 		const uint64_t *p = codecContext->codec->channel_layouts;
 		while (*p)
 		{
