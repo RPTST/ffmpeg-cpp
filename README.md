@@ -32,8 +32,8 @@ Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMin
 
 - [x] read_audio
 - [x] decode_video big_buck_bunny.mp4 results in 1440 grey images (who can be assembled to retrieve the video)
-- [ ] encode_audio (WIP)
-- [ ] encode_video (WIP)
+- [ ] encode_audio (WIP) // status : caught exception 
+- [x] encode_video : output.mpg created and works (no sound though, as expected)
 - [ ] remuxing (WIP)
 - [ ] print_info (WIP)
 - [ ] difference (WIP)
