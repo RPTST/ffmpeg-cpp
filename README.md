@@ -31,9 +31,9 @@ I created a CMakefile from scratch, and the lib is now built straight away. I'll
 Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMint, but whatever the distribution, this should work anywhere
 
 - [x] read_audio
-- [ ] read_video  (WIP)
-- [ ] encode_audio (WIP)
-- [ ] encode_video (WIP)
+- [x] decode_video big_buck_bunny.mp4 results in 1440 grey images (who can be assembled to retrieve the video)
+- [ ] encode_audio (WIP) // status : caught exception (crash in AudioEncoder* encoder = new AudioEncoder(codec, muxer);)
+- [x] encode_video : output.mpg created and works (no sound though, as expected)
 - [ ] remuxing (WIP)
 - [ ] print_info (WIP)
 - [ ] difference (WIP)
