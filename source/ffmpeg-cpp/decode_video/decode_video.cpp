@@ -74,7 +74,7 @@ int main()
 	try
 	{
 		// Load this container file so we can extract video from it.
-		Demuxer* demuxer = new Demuxer("samples/big_buck_bunny.mp4");
+		Demuxer* demuxer = new Demuxer("../samples/big_buck_bunny.mp4");
 
 		// Create a file sink that will just output the raw frame data in one PGM file per frame.
 		PGMFileSink* fileSink = new PGMFileSink();
