@@ -9,7 +9,7 @@ using namespace ffmpegcpp;
 
 int main()
 {
-	// This example will take a raw audio file and encode it into as MP3.
+	// This example will take a raw audio file and encode it into as Matroska.
 	try
 	{
 		// Create a muxer that will output the video as MKV.
@@ -31,8 +31,9 @@ int main()
 		AudioEncoder* audioEncoder = new AudioEncoder(audioCodec, muxer);
 
 		// Load both audio and video from a container
-		Demuxer* videoContainer = new Demuxer("samples/big_buck_bunny.mp4");
-		Demuxer* audioContainer = new Demuxer("samples/DesiJourney.wav");
+		Demuxer* videoContainer = new Demuxer("../samples/big_buck_bunny.mp4");
+//		Demuxer* audioContainer = new Demuxer("../samples/DesiJourney.wav");
+		Demuxer* audioContainer = new Demuxer("AC_DC_Hells_Bells.mp3");
 
 		// Tie the best stream from each container to the output
 		videoContainer->DecodeBestVideoStream(videoEncoder);
@@ -59,12 +60,8 @@ int main()
 	catch (FFmpegException e)
 	{
 		cerr << "Exception caught!" << endl;
-		cerr << e.what() << endl;
 		throw e;
 	}
 
 	cout << "Encoding complete!" << endl;
-	cout << "Press any key to continue..." << endl;
-
-	getchar();
 }
