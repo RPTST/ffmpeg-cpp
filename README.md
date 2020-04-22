@@ -30,16 +30,16 @@ I created a CMakefile from scratch, and the lib is now built straight away. I'll
 
 Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMint, but whatever the distribution, this should work anywhere
 
-- [x] read_audio
+- [x] decode_audio
 - [x] decode_video big_buck_bunny.mp4 results in 1440 grey images (who can be assembled to retrieve the video)
 - [x] encode_audio //**don't forget to install libmp3lame AND to add --enable-libmp3lame at configure time with FFMPEG!**
 - [x] encode_video : output.mpg created and works (no sound though, as expected)
-- [ ] remuxing (WIP)
-- [ ] print_info (WIP)
-- [ ] difference (WIP)
-- [ ] simple interface (WIP)
-- [ ] example (WIP)
-- [ ] demo (WIP)
+- [x] remuxing // **don't forget to add --enable-libvpx building FFMPEG, and it will work too !!**
+- [x] print_info  //  **works**
+- [x] difference //  **works too !**
+- [ ] simple interface (WIP, not really Linux since it seems to be Windows specific)
+- [x] simple interface demo // **works too : video rotated in the counter clock sense** 
+- [ ] demo (WIP) // currently broken, needs more love ...
 
 # Usage
 
