@@ -18,6 +18,26 @@ This will build a .lib file that you can use in your own C++ projects. It will a
 
 I created a CMakefile, and the lib is straight forward. I'll probably add someMakefiles in the demo directory, to test ecery case (muxer, audio extraction, and so on).
 
+## What works on Linux :
+
+[x] cmake 
+[x] libffmpeg-cpp.a is created
+[x] one can link it
+
+## Demos
+
+Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMint, but whatever the distribution, this should work anywhere
+
+[x] read_audio
+[ ] read_video  (WIP)
+[ ] encode_audio (WIP)
+[ ] encode_video (WIP)
+[ ] remuxing (WIP)
+[ ] print_info (WIP)
+[ ] difference (WIP)
+[ ] simple interface (WIP)
+[ ] example (WIP)
+[ ] demo (WIP)
 
 # Usage
 
