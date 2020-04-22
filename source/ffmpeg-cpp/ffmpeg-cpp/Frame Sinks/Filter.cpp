@@ -1,5 +1,6 @@
 #include "Filter.h"
 #include "FFmpegException.h"
+#include <iostream>
 
 using namespace std;
 
@@ -75,7 +76,7 @@ namespace ffmpegcpp
 			}
 
 			// append an output sink to the buffer string
-			for (int i = 0; i < inputs.size(); ++i)
+			for (unsigned int i = 0; i < inputs.size(); ++i)
 			{
 				fullFilterString += "[in_" + to_string(i + 1) + "] ";
 			}
@@ -99,7 +100,7 @@ namespace ffmpegcpp
 			avfilter_inout_free(&gos);
 
 			// Fetch all input buffer sources and the output buffer sink from the graph.
-			for (int i = 0; i < filter_graph->nb_filters; ++i)
+			for (unsigned int i = 0; i < filter_graph->nb_filters; ++i)
 			{
 				AVFilterContext* ctx = filter_graph->filters[i];
 				if (ctx->nb_inputs == 0)
@@ -182,11 +183,14 @@ namespace ffmpegcpp
 	{
 		AVFrame *frame;
 		AVRational* timeBase;
-		for (int i = 0; i < inputs.size(); ++i)
+		for (unsigned int i = 0; i < inputs.size(); ++i)
 		{
 			while (inputs[i]->FetchFrame(&frame))
 			{
 				int ret = av_buffersrc_add_frame(bufferSources[i], frame);
+                                if (ret <0)
+                                    std::cout << "Pb with av_buffersrc_add_frame" << "\n";
+
 				av_frame_free(&frame);
 			}
 		}
@@ -213,7 +217,7 @@ namespace ffmpegcpp
 
 			// see if all inputs have received a frame - at this point, we can initialize!
 			bool allInputsHaveFrames = true;
-			for (int i = 0; i < inputs.size(); ++i)
+			for (unsigned int i = 0; i < inputs.size(); ++i)
 			{
 				if (!inputs[i]->HasFrame())
 				{
@@ -239,6 +243,9 @@ namespace ffmpegcpp
 		// add to the proper buffer source
 		int ret = av_buffersrc_add_frame_flags(bufferSources[streamIndex], frame, AV_BUFFERSRC_FLAG_KEEP_REF);
 
+                if (ret < 0)
+                    std::cout << "Pb with av_buffersrc_add_frame_flags()" << "\n";
+
 		PollFilterGraphForFrames();
 	}
 
@@ -247,6 +254,10 @@ namespace ffmpegcpp
 		if (!initialized) return; // can't close if we were never opened
 
 		int ret = av_buffersrc_add_frame_flags(bufferSources[streamIndex], NULL, AV_BUFFERSRC_FLAG_KEEP_REF);
+
+                if (ret < 0)
+                    std::cout << "Pb with av_buffersrc_add_frame_flags()" << "\n";
+
 		PollFilterGraphForFrames();
 
 		// close this input
@@ -254,7 +265,7 @@ namespace ffmpegcpp
 
 		// close our target only if all inputs are closed
 		bool allClosed = true;
-		for (int i = 0; i < inputs.size(); ++i)
+		for (unsigned int i = 0; i < inputs.size(); ++i)
 		{
 			if (!inputs[i]->IsClosed()) allClosed = false;
 		}
