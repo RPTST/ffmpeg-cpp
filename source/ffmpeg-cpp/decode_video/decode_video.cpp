@@ -98,12 +98,8 @@ int main()
 	catch (FFmpegException e)
 	{
 		cerr << "Exception caught!" << endl;
-//		cerr << e.what() << endl;
 		throw e;
 	}
 
 	cout << "Decoding complete!" << endl;
-	cout << "Press any key to continue..." << endl;
-
-	getchar();
 }
