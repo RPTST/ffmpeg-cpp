@@ -4,7 +4,12 @@ namespace ffmpegcpp
 {
 
 	VP9Codec::VP9Codec()
+#ifdef __linux__
+		: VideoCodec(AV_CODEC_ID_VP9)
+//		: VideoCodec("libvpx.so")
+#else
 		: VideoCodec("libvpx-vp9")
+#endif
 	{
 
 	}
