@@ -20,7 +20,8 @@ void PlayDemo(int argc, char** argv)
 
 	// These are example video and audio sources used below.
 	const char* rawVideoFile = "../samples/carphone_qcif.y4m";
-	int rawVideoWidth = 176; int rawVideoHeight = 162;
+        // FIXME : unused
+	//int rawVideoWidth = 176; int rawVideoHeight = 162;
 	const char* rawAudioFile = "../samples/Vivaldi_s16le_2_channels_samplerate_11025.dat";
 	const char* rawAudioFormat = "s16le"; int rawAudioSampleRate = 11025; int rawAudioChannels = 2;
 
