@@ -39,7 +39,14 @@ Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMin
 - [x] difference //  **works too !**
 - [ ] simple interface (WIP, not really Linux since it seems to be Windows specific)
 - [x] simple interface demo // **works OK too : video rotated in the counter clock sense**  e.g. : watching a smartphone video
-- [ ] demo (WIP) // currently broken, needs more love ...
+- [x] demo: **works OK**. Testing multimix with other sources, seems to be OK !
+
+## TODO
+
+- [x] DONE fix undefined behaviour with delete []
+- [] fix all FFMPEG warnings (codec use is deprecated since .... )
+- [] fix all other warnings : unused variables and more
+- [] create a list of what is currently doable
 
 # Usage
 
