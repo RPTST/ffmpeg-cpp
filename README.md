@@ -44,9 +44,9 @@ Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMin
 ## TODO
 
 - [x] DONE fix undefined behaviour with delete []
-- [] fix all FFMPEG warnings (codec use is deprecated since .... )
-- [] fix all other warnings : unused variables and more
-- [] create a list of what is currently doable
+- [ ] fix all FFMPEG warnings (codec use is deprecated since .... )
+- [ ] fix all other warnings : unused variables and more
+- [ ] create a list of what is currently doable
 
 # Usage
 
