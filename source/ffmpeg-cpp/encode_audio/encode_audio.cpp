@@ -38,7 +38,6 @@ int main()
 		// Push all the remaining frames through.
 		while (!audioFile->IsDone())
 		{
-		    cerr << "pushing audio frame" << "\n";
 			audioFile->Step();
 		}
 		
@@ -53,7 +52,4 @@ int main()
 	}
 
 	cout << "Encoding complete!" << endl;
-	cout << "Press any key to continue..." << "\n";
-
-	getchar();
 }
