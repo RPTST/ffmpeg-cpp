@@ -61,7 +61,4 @@ int main()
 	}
 
 	cout << "Encoding complete!" << endl;
-	cout << "Press any key to continue..." << endl;
-
-	getchar();
 }
