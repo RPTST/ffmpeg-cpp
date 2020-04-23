@@ -41,10 +41,10 @@ namespace ffmpegcpp
 		bool wasPrimed = IsPrimed();
 
 		// clean up all the output streams that were added to this muxer.
-		for (unsigned int i = 0; i < outputStreams.size(); ++i)
-		{
-			delete outputStreams[i];
-		}
+               for (unsigned int i = 0; i < outputStreams.size(); ++i)
+               {
+                   outputStreams[i] = nullptr;
+               }
 		outputStreams.clear();
 
 		// clean up the container context - this will also finalize the content of the container!
