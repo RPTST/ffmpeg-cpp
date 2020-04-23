@@ -41,14 +41,21 @@ Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMin
 - [x] simple interface demo // **works OK too : video rotated in the counter clock sense**  e.g. : watching a smartphone video
 - [x] demo: **works OK**. Testing multimix with other sources, seems to be OK !
 
-## TODO
+## TODO (Linux)
 
 - [x] DONE fix undefined behaviour with delete []
 - [ ] fix all FFMPEG warnings (codec use is deprecated since .... )
 - [ ] fix all other warnings : unused variables and more
 - [ ] create a list of what is currently doable
 
-# Usage
+# Usage 
+
+## Linux
+
+- [ ] (soon)
+- [ ] (more)
+
+## Windows
 
 There are multiple demo projects included in the solution. Check out the demo-project for a thorough exploration of the features (demuxing, decoding, filtering, encoding, muxing) or one of the other examples for a simpler example to follow.
 
