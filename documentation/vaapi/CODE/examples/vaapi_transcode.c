@@ -1,3 +1,25 @@
+/*
+ * Video Acceleration API (video transcoding) transcode sample
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 /**
  * @file
  * Intel VAAPI-accelerated transcoding example.
@@ -123,7 +145,7 @@ end:
     return ret;
 }
 
-static AVFrame* dec_enc(AVPacket *pkt) //, AVCodec *enc_codec)
+static int dec_enc(AVPacket *pkt, AVCodec *enc_codec)
 {
     AVFrame *frame;
     int ret = 0;
@@ -137,19 +159,16 @@ static AVFrame* dec_enc(AVPacket *pkt) //, AVCodec *enc_codec)
     while (ret >= 0) {
         if (!(frame = av_frame_alloc()))
             return AVERROR(ENOMEM);
-        printf("invoke after f alloc: avcodec_recv_frame \n");
+
         ret = avcodec_receive_frame(decoder_ctx, frame);
         if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
-            printf("AV decode error: %s\n", av_err2str(ret));
-        av_frame_free(&frame);	    
+            av_frame_free(&frame);
             return 0;
         } else if (ret < 0) {
             fprintf(stderr, "Error while decoding. Error code: %s\n", av_err2str(ret));
             goto fail;
         }
 
-        
-#if 0	
         if (!initialized) {
             /* we need to ref hw_frames_ctx of decoder to initialize encoder's codec.
                Only after we get a decoded frame, can we obtain its hw_frames_ctx */
@@ -199,12 +218,9 @@ static AVFrame* dec_enc(AVPacket *pkt) //, AVCodec *enc_codec)
 
         if ((ret = encode_write(frame)) < 0)
             fprintf(stderr, "Error during encoding and writing.\n");
-#endif	    
 
 fail:
-        //av_frame_free(&frame);
-    //printf("free frame in decoder func\n");
-    return frame;
+        av_frame_free(&frame);
         if (ret < 0)
             return ret;
     }
@@ -217,7 +233,7 @@ int main(int argc, char **argv)
     AVPacket dec_pkt;
     AVCodec *enc_codec;
 
-    if (argc != 2) {
+    if (argc != 4) {
         fprintf(stderr, "Usage: %s <input file> <encode codec> <output file>\n"
                 "The output format is guessed according to the file extension.\n"
                 "\n", argv[0]);
@@ -233,13 +249,12 @@ int main(int argc, char **argv)
     if ((ret = open_input_file(argv[1])) < 0)
         goto end;
 
-    /*
     if (!(enc_codec = avcodec_find_encoder_by_name(argv[2]))) {
         fprintf(stderr, "Could not find encoder '%s'\n", argv[2]);
         ret = -1;
         goto end;
     }
-    
+
     if ((ret = (avformat_alloc_output_context2(&ofmt_ctx, NULL, NULL, argv[3]))) < 0) {
         fprintf(stderr, "Failed to deduce output format from file extension. Error code: "
                 "%s\n", av_err2str(ret));
@@ -250,44 +265,36 @@ int main(int argc, char **argv)
         ret = AVERROR(ENOMEM);
         goto end;
     }
-   
+
     ret = avio_open(&ofmt_ctx->pb, argv[3], AVIO_FLAG_WRITE);
     if (ret < 0) {
         fprintf(stderr, "Cannot open output file. "
                 "Error code: %s\n", av_err2str(ret));
         goto end;
     }
-    */    
 
-    int k = 0;
     /* read all packets and only transcoding video */
     while (ret >= 0) {
         if ((ret = av_read_frame(ifmt_ctx, &dec_pkt)) < 0)
             break;
 
-        printf("attempt to decode packet: %d\n", k);
-    if (video_stream == dec_pkt.stream_index) {
-            AVFrame *frame = dec_enc(&dec_pkt); //, enc_codec);
-        if(frame != 0) { 
-              av_frame_free(&frame);
-              printf("decoded and freed frame: %d\n", k);
-        }
-    }
+        if (video_stream == dec_pkt.stream_index)
+            ret = dec_enc(&dec_pkt, enc_codec);
+
         av_packet_unref(&dec_pkt);
-    k++;
     }
 
     /* flush decoder */
     dec_pkt.data = NULL;
     dec_pkt.size = 0;
-    ret = dec_enc(&dec_pkt); // , enc_codec);
+    ret = dec_enc(&dec_pkt, enc_codec);
     av_packet_unref(&dec_pkt);
 
     /* flush encoder */
-    //ret = encode_write(NULL);
+    ret = encode_write(NULL);
 
     /* write the trailer for output stream */
-    //av_write_trailer(ofmt_ctx);
+    av_write_trailer(ofmt_ctx);
 
 end:
     avformat_close_input(&ifmt_ctx);
@@ -297,4 +304,3 @@ end:
     av_buffer_unref(&hw_device_ctx);
     return ret;
 }
-
