@@ -22,7 +22,6 @@
 #include "ffmpeg-cpp/Codecs/VP9Codec.h"
 #include "ffmpeg-cpp/Codecs/PNGCodec.h"
 #include "ffmpeg-cpp/Codecs/JPGCodec.h"
-#include "ffmpeg-cpp/Codecs/H264_VAAPICodec.h"
 #include "ffmpeg-cpp/Codecs/H264Codec.h"
 #include "ffmpeg-cpp/Codecs/MPEG4Codec.h"
 #include "ffmpeg-cpp/Codecs/VideoCodec.h"
