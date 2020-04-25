@@ -51,7 +51,7 @@ Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMin
 - [ ] create some patterns, and a list of commonly used video codecs (vp9 / h264 / hevc / mpeg4 / mjpeg and some other)
 - [ ] create some patterns, and a list of commonly used audio codecs
 - [ ] make hwdecoders / encoders work [vaapi, drm in priority]
-- [ ] 
+- [ ] (more to come)
 # Usage 
 
 ## Linux
