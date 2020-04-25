@@ -117,7 +117,6 @@ namespace ffmpegcpp
 		}
 
 		// based on the codec, we use different buffer sizes
-		int refillThreshold;
 		if (codecContext->codec->type == AVMEDIA_TYPE_VIDEO)
 		{
 			bufferSize = 4096;

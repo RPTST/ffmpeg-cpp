@@ -34,6 +34,8 @@ namespace ffmpegcpp
 		AVCodecContext* codecContext = nullptr;
 
 		int bufferSize;
+                int refillThreshold;
+
 
 		AVFrame* decoded_frame = nullptr;
 		AVPacket* pkt = nullptr;
