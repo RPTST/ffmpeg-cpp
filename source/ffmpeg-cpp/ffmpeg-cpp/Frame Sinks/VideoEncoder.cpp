@@ -118,7 +118,7 @@ namespace ffmpegcpp
 		return oneInputFrameSink->CreateStream();
 	}
 
-	void VideoEncoder::WriteFrame(int streamIndex, AVFrame* frame, StreamData* metaData)
+	void VideoEncoder::WriteFrame(int /*streamIndex*/, AVFrame* frame, StreamData* metaData)
 	{
 		// if we haven't opened the codec yet, we do it now!
 		if (codec == nullptr)
@@ -146,7 +146,7 @@ namespace ffmpegcpp
 		PollCodecForPackets();
 	}
 
-	void VideoEncoder::Close(int streamIndex)
+	void VideoEncoder::Close(int /* streamIndex */)
 	{
 		if (codec == nullptr) return; // can't close if we were never opened
 
