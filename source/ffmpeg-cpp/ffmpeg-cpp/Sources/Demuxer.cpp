@@ -62,10 +62,7 @@ namespace ffmpegcpp
 		{
 			for (unsigned int i = 0; i < containerContext->nb_streams; ++i)
 			{
-				if (inputStreams[i] != nullptr)
-				{
-					delete inputStreams[i];
-				}
+                            inputStreams[i] = nullptr;
 			}
 			delete inputStreams;
 			inputStreams = nullptr;
