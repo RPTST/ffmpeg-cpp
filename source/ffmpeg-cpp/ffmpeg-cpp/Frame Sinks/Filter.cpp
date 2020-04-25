@@ -136,7 +136,8 @@ namespace ffmpegcpp
 		if (metaData->type == AVMEDIA_TYPE_VIDEO)
 		{
 			/* buffer video source: the decoded frames from the decoder will be inserted here. */
-			AVPixelFormat pixelFormat = (AVPixelFormat)frame->format;
+			// FIXME : unused
+			//AVPixelFormat pixelFormat = (AVPixelFormat)frame->format;
 			snprintf(args, argsLength,
 				"video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d:frame_rate=%d/%d",
 				frame->width, frame->height, frame->format,
@@ -182,7 +183,8 @@ namespace ffmpegcpp
 	void Filter::DrainInputQueues()
 	{
 		AVFrame *frame;
-		AVRational* timeBase;
+		// FIXME : unused
+		// AVRational* timeBase;
 		for (unsigned int i = 0; i < inputs.size(); ++i)
 		{
 			while (inputs[i]->FetchFrame(&frame))
