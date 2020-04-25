@@ -28,5 +28,5 @@ if (UNIX)
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/source/ffmpeg-cpp/ffmpeg-cpp )
 endif()
 
-target_link_libraries(${PROJECT_NAME} ffmpeg vpx)
+target_link_libraries(${PROJECT_NAME} ffmpeg vpx va va-drm va-glx)
 
