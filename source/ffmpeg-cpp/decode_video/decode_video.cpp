@@ -20,7 +20,7 @@ public:
 		return stream;
 	}
 
-	virtual void WriteFrame(int streamIndex, AVFrame* frame, StreamData* streamData)
+	virtual void WriteFrame(int /* streamIndex */, AVFrame* frame, StreamData*  /* streamData */)
 	{
 		++frameNumber;
 		printf("saving frame %3d\n", frameNumber);
@@ -47,7 +47,7 @@ public:
 		fclose(f);
 	}
 
-	virtual void Close(int streamIndex)
+	virtual void Close(int /* streamIndex */)
 	{
 		delete stream;
 	}
