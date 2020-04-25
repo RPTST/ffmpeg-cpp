@@ -15,13 +15,25 @@ int main()
 		Muxer* muxer = new Muxer("filtered_video.mp4");
 
 		// Create a MPEG2 codec that will encode the raw data.
-		VideoCodec* vcodec = new VideoCodec(AV_CODEC_ID_MPEG2VIDEO);
+//		VideoCodec* vcodec = new VideoCodec(AV_CODEC_ID_MPEG2VIDEO);
+
+		VP9Codec* vcodec = new VP9Codec();
+//		H264_VAAPICodec* vcodec = new H264_VAAPICodec();
+
 		AudioCodec* acodec = new AudioCodec(AV_CODEC_ID_AAC);
 
 		// Set the global quality of the video encoding. This maps to the command line
 		// parameter -qscale and must be within range [0,31].
-		vcodec->SetQualityScale(30);
+		vcodec->SetQualityScale(20);
 
+		vcodec->SetGlobalQuality(100);
+// hw bazaar
+		vcodec->InitHardwareDevice("vaapi=intel:/dev/dri/renderD128");
+		vcodec->SetHardwareAccelAPI("vaapi");
+		vcodec->SetVAAPIDevice("/dev/dri/renderD128"); // can be  0: , /dev/dri/renderD128
+		vcodec->SetHardwareAccelOutputFormat("vaapi");  //can be vaapi, yuv420p
+		vcodec->SetHardwareAccelDevice("intel");
+		vcodec->SetFilterHardwareDevice("intel");
 		// Create an encoder that will encode the raw audio data as MP3.
 		// Tie it to the muxer so it will be written to the file.
 		VideoEncoder* vEncoder = new VideoEncoder(vcodec, muxer);
@@ -29,6 +41,9 @@ int main()
 		AudioEncoder* aEncoder = new AudioEncoder(acodec, muxer);
 
 		// Create a video filter and do some funny stuff with the video data.
+//		Filter* filter = new Filter("format=nv12|vaapi,hwupload,vaapi_device:/dev/dri/renderD128,scale_vaapi=w=1280:h=720:format=yuv420p,hwdownload,transpose=cclock,vignette", vEncoder);
+//		Filter* filter = new Filter("format=nv12|vaapi,hwupload,scale_vaapi=w=1280:h=720,transpose_vaapi=cclock", vEncoder);
+//		Filter* filter = new Filter("format=nv12|vaapi,hwupload,/dev/dri/renderD128,scale_vaapi=w=1280:h=720,transpose=cclock,vignette", vEncoder);
 		Filter* filter = new Filter("scale=640:250,transpose=cclock,vignette", vEncoder);
 
 		// Load a video from a container and send it to the filter first.
