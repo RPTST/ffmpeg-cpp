@@ -31,7 +31,9 @@ namespace ffmpegcpp
 
 		AVRational tb = stream->time_base;
 
-		StreamData* metaData = new StreamData();
+		// FIXME : unused
+		// StreamData* metaData = new StreamData();
+
 		info.timeBase = tb;
 
 		AVCodecContext* codecContext = avcodec_alloc_context3(NULL);
@@ -43,12 +45,14 @@ namespace ffmpegcpp
 			throw new FFmpegException(std::string("Failed to read parameters from stream").c_str());
 		}
 
-		codecContext->properties = stream->codec->properties;
-		codecContext->codec = stream->codec->codec;
-		codecContext->qmin = stream->codec->qmin;
-		codecContext->qmax = stream->codec->qmax;
-		codecContext->coded_width = stream->codec->coded_width;
-		codecContext->coded_height = stream->codec->coded_height;
+                // DEPRECATED all the parameters below seems to be implicitely copied
+                // https://ffmpeg.org/doxygen/3.4/libavcodec_2utils_8c_source.html#l02354
+		//codecContext->properties = stream->codec->properties;
+		//codecContext->codec = stream->codec->codec;
+		//codecContext->qmin = stream->codec->qmin;
+		//codecContext->qmax = stream->codec->qmax;
+		//codecContext->coded_width = stream->codec->coded_width;
+		//codecContext->coded_height = stream->codec->coded_height;
 
 		info.bitRate = CalculateBitRate(codecContext);
 
