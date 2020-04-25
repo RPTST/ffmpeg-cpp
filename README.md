@@ -40,12 +40,13 @@ Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMin
 - [ ] simple interface (WIP, not really Linux since it seems to be Windows specific)
 - [x] simple interface demo // **works OK too : video rotated in the counter clock sense**  e.g. : watching a smartphone video
 - [x] demo: **works OK**. Testing multimix with other sources, seems to be OK !
-
+- [x] **improved the remuxing demo**
+- [x] **improved the decode_video demo**  (MJPEG : not working, but some progress done)
 ## TODO (Linux)
 
-- [x] DONE fix undefined behaviour with delete []
-- [ ] fix all FFMPEG warnings (codec use is deprecated since .... )
-- [ ] fix all other warnings : unused variables and more
+- [x] DONE fix undefined behaviour with delete [done]
+- [x] fix all FFMPEG warnings (codec use is deprecated since .... )
+- [x] fix all other warnings : unused variables and more
 - [ ] create a list of what is currently doable
 - [ ] create some patterns, and a list of commonly used video codecs (vp9 / h264 / hevc / mpeg4 / mjpeg and some other)
 - [ ] create some patterns, and a list of commonly used audio codecs
