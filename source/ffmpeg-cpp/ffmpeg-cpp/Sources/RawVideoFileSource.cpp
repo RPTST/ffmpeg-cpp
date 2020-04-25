@@ -1,93 +1,197 @@
 #include "RawVideoFileSource.h"
 #include "FFmpegException.h"
-
+#include <iostream>
 
 using namespace std;
 
 namespace ffmpegcpp
 {
-	RawVideoFileSource::RawVideoFileSource(const char* fileName, FrameSink* frameSink)
-	{
+    RawVideoFileSource::RawVideoFileSource(const char* fileName, FrameSink* frameSink)
+    {
+#ifdef DEBUG
+        std::cerr << "Currently in " <<  __func__ << ". We are opening (fileName)  :  "  <<  fileName << "\n";
+#endif
+        // create the demuxer - it can handle figuring out the video type on its own apparently
+        try
+        {
+#ifdef DEBUG
+            std::cerr << "Trying to create new Demuxer ... " << "\n";
+#endif
+            demuxer = new Demuxer(fileName, NULL, NULL);
+#ifdef DEBUG
+            std::cerr << "New Demuxer created " << "\n";
+#endif
+            demuxer->DecodeBestVideoStream(frameSink);
 
-		// create the demuxer - it can handle figuring out the video type on its own apparently
-		try
-		{
-			demuxer = new Demuxer(fileName, NULL, NULL);
-			demuxer->DecodeBestVideoStream(frameSink);
-		}
-		catch (FFmpegException e)
-		{
-			CleanUp();
-			throw e;
-		}
-	}
+#ifdef DEBUG
+            std::cerr << "demuxer->DecodeBestVideoStream(frameSink) done " << "\n";
+#endif
 
-	// Doesn't work for now. See the header for more info.
-	/*RawVideoFileSource::RawVideoFileSource(const char* fileName, int width, int height, const char* frameRate, AVPixelFormat format, VideoFrameSink* frameSink)
-	{
+        }
+        catch (FFmpegException e)
+        {
+            CleanUp();
+            throw e;
+        }
+    }
+    // only testng on Linux for the moment, but Windows should work. MacOS X = don't care
+#ifdef __linux__
+    /*
+        Demuxer video4linux2,v4l2 [Video4Linux2 device grab]:
+        V4L2 indev AVOptions:
+          -standard          <string>     .D....... set TV standard, used only by analog frame grabber
+          -channel           <int>        .D....... set TV channel, used only by frame grabber (from -1 to INT_MAX) (default -1)
+          -video_size        <image_size> .D....... set frame size
+          -pixel_format      <string>     .D....... set preferred pixel format
+          -input_format      <string>     .D....... set preferred pixel format (for raw video) or codec name
+          -framerate         <string>     .D....... set frame rate
+          -list_formats      <int>        .D....... list available formats and exit (from 0 to INT_MAX) (default 0)
+             all                          .D....... show all available formats
+             raw                          .D....... show only non-compressed formats
+             compressed                   .D....... show only compressed formats
+          -list_standards    <int>        .D....... list supported standards and exit (from 0 to 1) (default 0)
+             all                          .D....... show all supported standards
+          -timestamps        <int>        .D....... set type of timestamps for grabbed frames (from 0 to 2) (default default)
+             default                      .D....... use timestamps from the kernel
+             abs                          .D....... use absolute timestamps (wall clock)
+             mono2abs                     .D....... force conversion from monotonic to absolute timestamps
+          -ts                <int>        .D....... set type of timestamps for grabbed frames (from 0 to 2) (default default)
+             default                      .D....... use timestamps from the kernel
+             abs                          .D....... use absolute timestamps (wall clock)
+             mono2abs                     .D....... force conversion from monotonic to absolute timestamps
+          -use_libv4l2       <boolean>    .D....... use libv4l2 (v4l-utils) conversion functions (default false)
+    */
 
-		// try to deduce the input format from the input format name
-		AVInputFormat *file_iformat;
-		if (!(file_iformat = av_find_input_format("yuv4mpegpipe")))
-		{
-			CleanUp();
-			throw FFmpegException("Unknown input format 'rawvideo'");
-		}
+    RawVideoFileSource::RawVideoFileSource(const char* fileName, int /* width */, int /* height */, /*int frameRate_num, int frameRate_den,*/ AVPixelFormat format, VideoFrameSink* frameSink)
+    {
+#ifdef DEBUG
+        std::cerr << "Currently in "  <<  __func__ << ". We are opening (fileName)  :  "  <<  fileName << "\n";
+        std::cerr << "width "         << width             << "\n";
+        std::cerr << "height "        << height            << "\n";
+        std::cerr << "format "        << format            << "\n";
+#endif
 
-		AVDictionary* format_opts = NULL;
+#ifdef _WIN32
+        const char input_device[] = "dshow"; // I'm using dshow when cross compiling :-)
+#elif defined(__linux__)
+        const char input_device[] = "v4l2";
+#endif
+        AVDictionary* options = NULL;
+        av_dict_set(&options, "framerate", "24", 0);
+        av_dict_set(&options, "video_size", "1280x720", 0);
+        AVInputFormat* input_fmt = av_find_input_format(input_device);
+        AVFormatContext* fmt_ctx = NULL;
 
-		// only set the frame rate if the format allows it!
-		if (file_iformat && file_iformat->priv_class &&	av_opt_find(&file_iformat->priv_class, "framerate", NULL, 0, AV_OPT_SEARCH_FAKE_OBJ))
-		{
-			av_dict_set(&format_opts, "framerate", frameRate, 0);
-		}
-		char videoSize[200];
-		sprintf(videoSize, "%dx%d", width, height);
-		av_dict_set(&format_opts, "video_size", videoSize, 0);
-		const char* pixelFormatName = av_get_pix_fmt_name(format);
-		av_dict_set(&format_opts, "pixel_format", pixelFormatName, 0);
+        if ((avformat_open_input(&fmt_ctx, fileName,input_fmt, NULL))!=0)
+        {
+            // TODO : verify it's mandatory
+            std::cerr <<  ">>>  av_input_open_returned 1 " << "\n";
 
-		// create the demuxer
-		try
-		{
-			demuxer = new Demuxer(fileName, file_iformat, format_opts);
-			demuxer->DecodeBestVideoStream(frameSink);
-		}
-		catch (FFmpegException e)
-		{
-			CleanUp();
-			throw e;
-		}
-	}*/
+            const char* pixelFormatName = av_get_pix_fmt_name(format);
+            av_dict_set(&options, "pixel_format", pixelFormatName, 0);
 
+            // create the demuxer
+            // try
+            // {
+#ifdef DEBUG
+            std::cerr << "Creating new muxer "   << "\n";
+#endif
+            // FIXME BROKEN : the encoder is NOT correctly initialized
+            //          but the file is open (/dev/video0)
 
-	RawVideoFileSource::~RawVideoFileSource()
-	{
-		CleanUp();
-	}
+            /// maybe simply open a file, and grab frames instead ?
+            demuxer = new Demuxer(fileName, input_fmt, options);
+#ifdef DEBUG
+            std::cerr << "Muxer created "   << "\n";
+#endif
+            demuxer->DecodeBestVideoStream(frameSink);
+#ifdef DEBUG
+            std::cerr << "demuxer->DecodeBestVideoStream(frameSink) DONE "   << "\n";
+#endif
+            // }
+            // catch (FFmpegException e)
+            // {
+            //     CleanUp();
+            // throw e;
+            // }
+            }
+            else
+                std::cerr << "input_device not created"   << "\n";
 
-	void RawVideoFileSource::CleanUp()
-	{
-		if (demuxer != nullptr)
-		{
-			delete demuxer;
-			demuxer = nullptr;
-		}
-	}
+            avformat_close_input(&fmt_ctx);
+            avformat_free_context(fmt_ctx);
+            av_dict_free(&options);
 
-	void RawVideoFileSource::PreparePipeline()
-	{
-		demuxer->PreparePipeline();
-	}
+#ifdef DEBUG
+            std::cerr << "returning from " << __func__  << "\n";
+#endif
+        }
+#endif  /*  __linux__ */
 
-	bool RawVideoFileSource::IsDone()
-	{
-		return demuxer->IsDone();
-	}
+        // Doesn't work for now. See the header for more info.
+        /*RawVideoFileSource::RawVideoFileSource(const char* fileName, int width, int height, const char* frameRate, AVPixelFormat format, VideoFrameSink* frameSink)
+        {
+            // try to deduce the input format from the input format name
+            AVInputFormat *file_iformat;
+            if (!(file_iformat = av_find_input_format("yuv4mpegpipe")))
+            {
+                CleanUp();
+                throw FFmpegException("Unknown input format 'rawvideo'");
+            }
 
-	void RawVideoFileSource::Step()
-	{
-		demuxer->Step();
-	}
+            AVDictionary* format_opts = NULL;
+
+            // only set the frame rate if the format allows it!
+            if (file_iformat && file_iformat->priv_class &&	av_opt_find(&file_iformat->priv_class, "framerate", NULL, 0, AV_OPT_SEARCH_FAKE_OBJ))
+            {
+                av_dict_set(&format_opts, "framerate", frameRate, 0);
+            }
+            char videoSize[200];
+            sprintf(videoSize, "%dx%d", width, height);
+            av_dict_set(&format_opts, "video_size", videoSize, 0);
+            const char* pixelFormatName = av_get_pix_fmt_name(format);
+            av_dict_set(&format_opts, "pixel_format", pixelFormatName, 0);
+
+            // create the demuxer
+            try
+            {
+                demuxer = new Demuxer(fileName, file_iformat, format_opts);
+                demuxer->DecodeBestVideoStream(frameSink);
+            }
+            catch (FFmpegException e)
+            {
+                CleanUp();
+                throw e;
+            }
+        }*/
+
+    RawVideoFileSource::~RawVideoFileSource()
+    {
+        CleanUp();
+    }
+
+    void RawVideoFileSource::CleanUp()
+    {
+        if (demuxer != nullptr)
+        {
+            delete demuxer;
+            demuxer = nullptr;
+        }
+    }
+
+    void RawVideoFileSource::PreparePipeline()
+    {
+        demuxer->PreparePipeline();
+    }
+
+    bool RawVideoFileSource::IsDone()
+    {
+        return demuxer->IsDone();
+    }
+
+    void RawVideoFileSource::Step()
+    {
+        demuxer->Step();
+    }
 }
 
