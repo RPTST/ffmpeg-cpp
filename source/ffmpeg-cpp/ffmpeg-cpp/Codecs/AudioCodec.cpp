@@ -28,7 +28,9 @@ namespace ffmpegcpp
 	{
 	}
 
-	/* check that a given sample format is supported by the encoder */
+	// check that a given sample format is supported by the encoder
+        /*
+        // FIXME : unused
 	static int check_sample_fmt(const AVCodec *codec, enum AVSampleFormat sample_fmt)
 	{
 		const enum AVSampleFormat *p = codec->sample_fmts;
@@ -41,6 +43,7 @@ namespace ffmpegcpp
 		}
 		return 0;
 	}
+        */
 
 	// calculate the best sample rate for a codec, defaults to 44100
 	static int select_sample_rate(const AVCodec *codec)
