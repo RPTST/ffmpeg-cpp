@@ -40,7 +40,7 @@ void PlayDemo(int argc, char** argv)
 	string outputAudioCodec = "NONE"; // NONE by default elsewhere
 #endif
 #ifdef HAVE_NVIDIA 
-	string outputVideoCodec = "H264"; // options are H264, H265, VP9, NONE (H264 and H265 only work on Nvidia hardware)
+	string outputVideoCodec = "H264NV"; // options are H264, H265, VP9, NONE (H264 and H265 only work on Nvidia hardware)
 #else
         // f... NVIDIA btw
 	string outputVideoCodec = "VP9"; // options are H264, H265, VP9, NONE (H264 and H265 only work on Nvidia hardware)
@@ -113,7 +113,7 @@ void PlayDemo(int argc, char** argv)
 
 		// create the output encoder based on our setting above
 		VideoCodec* videoCodec = nullptr;
-		if (outputVideoCodec == "H264")
+		if (outputVideoCodec == "H264NV")
 		{
 			printf("Encoding video as H264 on Nvidia GPU...\n");
 			H264NVEncCodec* h264Codec = new H264NVEncCodec();
