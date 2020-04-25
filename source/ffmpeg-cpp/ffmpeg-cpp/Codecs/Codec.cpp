@@ -1,6 +1,7 @@
 #include "Codec.h"
 #include "FFmpegException.h"
 #include "CodecDeducer.h"
+#include <iostream>
 
 using namespace std;
 
@@ -77,6 +78,9 @@ namespace ffmpegcpp
 		}
 
 		opened = true;
+#ifdef DEBUG
+                std::cerr << "codec Context is open (ouf)"  << "\n";
+#endif
 
 		return new OpenCodec(codecContext);
 	}
