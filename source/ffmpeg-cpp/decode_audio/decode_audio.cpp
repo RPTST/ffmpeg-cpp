@@ -21,7 +21,7 @@ public:
 		return stream;
 	}
 
-	virtual void WriteFrame(int streamIndex, AVFrame* frame, StreamData* streamData)
+	virtual void WriteFrame(int /*streamIndex*/, AVFrame* frame, StreamData* /* streamData */)
 	{
 		// Just write out the samples channel by channel to a file.
 		int data_size = av_get_bytes_per_sample((AVSampleFormat)frame->format);
@@ -34,7 +34,7 @@ public:
 		}
 	}
 
-	virtual void Close(int streamIndex)
+	virtual void Close(int /* streamIndex */)
 	{
 		fclose(file);
 		delete stream;
@@ -64,7 +64,7 @@ int main()
 		Demuxer* demuxer = new Demuxer("big_buck_bunny.mp4");
 
 		// Create a file sink that will just output the raw audio data.
-		RawAudioFileSink* fileSink = new RawAudioFileSink("rawaudio");
+		RawAudioFileSink* fileSink = new RawAudioFileSink("rawaudio.aac");
 
 		// tie the file sink to the best audio stream in the input container.
 		demuxer->DecodeBestAudioStream(fileSink);
