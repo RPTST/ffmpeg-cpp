@@ -46,7 +46,7 @@ namespace ffmpegcpp
 		return codec;
 	}
 
-	AVCodec* CodecDeducer::DeduceEncoderFromFilename(const char* fileName)
+	AVCodec* CodecDeducer::DeduceEncoderFromFilename(const char* /* fileName */)
 	{
 		throw FFmpegException(std::string("Not implemented yet").c_str());
 	}
