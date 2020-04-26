@@ -45,7 +45,7 @@ Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMin
 - [x] simple interface demo // **works OK too : video rotated in the counter clock sense**  e.g. : watching a smartphone video
 - [x] demo: **works OK**. Testing multimix with other sources, seems to be OK !
 - [x] **improved the remuxing demo**
-- [x] **improved the decode_video demo**  (MJPEG : not working, but some progress done)
+- [x] **improved the decode_video demo**  (MJPEG : not working when using hardware decoder, but some progress done)
 
 ## TODO (Linux)
 
