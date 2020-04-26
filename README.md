@@ -5,7 +5,6 @@ FORKED FROM [Raveler/ffmpeg-cpp](https://github.com/Raveler/ffmpeg-cpp)
 This is the Linux port. Maybe the Windows version works, but I'm unsure, and I'd suggest you to go to the Raveler page ( [Raveler/ffmpeg-cpp](https://github.com/Raveler/ffmpeg-cpp) )
 
 
-
 # ffmpeg-cpp
 A clean C++ wrapper around the ffmpeg libraries which can be used in any C++ project or C# project (with DllImport or CLR). Makes the most commonly used functionality of FFmpeg easily available for any C++ projects with an easy-to-use interface. The full power of FFmpeg compacted in 10 lines of C++ code: if this sounds useful to you, read on!
 
@@ -19,13 +18,6 @@ If you want to use the Windows version, I'd suggest you to go to the Raveler pag
 
  **( [Raveler/ffmpeg-cpp](https://github.com/Raveler/ffmpeg-cpp) )**
 
-"
-1. Clone the repository
-2. Download a build of FFmpeg from https://ffmpeg.zeranoe.com/builds/. The project was last tested with **4.1**. You will need both the dev version (for .h and .lib files) and the shared version (for .dll). Extract all of them into the ffmpeg directory in the repository. there are more instructions on how to extract them properly in the ffmpeg/readme.txt file.
-3. Open the Visual Studio solution in the source directory.
-4. Build everything.
-
-This will build a .lib file that you can use in your own C++ projects. It will also generate an include-folder in the repo root that you can add to your include filders in your own project.
 
 ## Linux
 
