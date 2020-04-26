@@ -28,6 +28,7 @@ I created a CMakefile from scratch, and the lib is now built straight away. I'll
 - [x] make is ok. TODO : fix a bunch of warnings, caused by a prehistoric version of ffmpeg at design time.
 - [x] libffmpeg-cpp.a is created
 - [x] one can link it
+- [x] FFMPEG filters seems to work well, excepted the hwaccels one (WIP)
 
 ## Demos
 
@@ -45,6 +46,7 @@ Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMin
 - [x] demo: **works OK**. Testing multimix with other sources, seems to be OK !
 - [x] **improved the remuxing demo**
 - [x] **improved the decode_video demo**  (MJPEG : not working, but some progress done)
+
 ## TODO (Linux)
 
 - [x] DONE fix undefined behaviour with delete [done]
@@ -59,7 +61,7 @@ Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMin
 
 ## Linux
 
-- [ ] (soon)
+- [ ] (very soon, WIP)
 - [ ] (more)
 
 
