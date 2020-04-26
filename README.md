@@ -2,6 +2,10 @@ FORKED FROM [Raveler/ffmpeg-cpp](https://github.com/Raveler/ffmpeg-cpp)
 
 **BE CAREFULL : ALL CHANGES ARE NOW UNDER GPL V3** (file an issue if you need something) [@ebachard](https://github.com/ebachard) 2020/04/22
 
+This is the Linux port. Maybe the Windows version works, but I'm unsure, and I'd suggest you to go to the Raveler page ( [Raveler/ffmpeg-cpp](https://github.com/Raveler/ffmpeg-cpp) )
+
+
+
 # ffmpeg-cpp
 A clean C++ wrapper around the ffmpeg libraries which can be used in any C++ project or C# project (with DllImport or CLR). Makes the most commonly used functionality of FFmpeg easily available for any C++ projects with an easy-to-use interface. The full power of FFmpeg compacted in 10 lines of C++ code: if this sounds useful to you, read on!
 
@@ -9,6 +13,13 @@ A clean C++ wrapper around the ffmpeg libraries which can be used in any C++ pro
 
 ## Windows
 
+Here is the Linux port. Maybe the Windows version works, but I'm unsure ...
+
+If you want to use the Windows version, I'd suggest you to go to the Raveler page instead:
+
+ **( [Raveler/ffmpeg-cpp](https://github.com/Raveler/ffmpeg-cpp) )**
+
+"
 1. Clone the repository
 2. Download a build of FFmpeg from https://ffmpeg.zeranoe.com/builds/. The project was last tested with **4.1**. You will need both the dev version (for .h and .lib files) and the shared version (for .dll). Extract all of them into the ffmpeg directory in the repository. there are more instructions on how to extract them properly in the ffmpeg/readme.txt file.
 3. Open the Visual Studio solution in the source directory.
@@ -59,11 +70,6 @@ Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMin
 - [ ] (soon)
 - [ ] (more)
 
-## Windows
-
-There are multiple demo projects included in the solution. Check out the demo-project for a thorough exploration of the features (demuxing, decoding, filtering, encoding, muxing) or one of the other examples for a simpler example to follow.
-
-There is also a .NET Core compatible simplified interface included so that you can embed this project in your .NET Core projects.
 
 ## C++
 
@@ -120,84 +126,14 @@ int main()
 
 ## C\#
 
-The simple-interface is made in such a way that it can easily be called using [DllImport] from any C# project:
+See   **( [Raveler/ffmpeg-cpp](https://github.com/Raveler/ffmpeg-cpp) )**
 
-```
-	public class Example
-	{
 
-		public Example()
-		{
-			try
-			{
-				string inFileName = "in.mp4";
-				string outFileName = "out.mp4";
-				IntPtr handle = ffmpegCppCreate(outFileName); CheckError(handle);
-				ffmpegCppAddVideoStream(handle, inFileName); CheckError(handle);
-				ffmpegCppAddAudioStream(handle, inFileName); CheckError(handle);
-				ffmpegCppAddVideoFilter(handle, "crop=1080:1920:740:0[middle];[middle]transpose=3"); CheckError(handle);
-				ffmpegCppGenerate(handle); CheckError(handle);
-				ffmpegCppClose(handle);
-			}
-			catch (InvalidOperationException e)
-			{
-				Console.WriteLine("ERROR: " + e.Message);
-			}
-		}
-
-		private void CheckError(IntPtr handle)
-		{
-			if (ffmpegCppIsError(handle))
-			{
-				IntPtr errorPtr = ffmpegCppGetError(handle);
-				string error = Marshal.PtrToStringAnsi(errorPtr);
-				throw new InvalidOperationException(error);
-			}
-		}
-
-		[DllImport("simple_interface.dll", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr ffmpegCppCreate(string outFileName);
-
-		[DllImport("simple_interface.dll", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void ffmpegCppAddVideoStream(IntPtr handle, [MarshalAs(UnmanagedType.LPStr)] string inFileName);
-
-		[DllImport("simple_interface.dll", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void ffmpegCppAddAudioStream(IntPtr handle, [MarshalAs(UnmanagedType.LPStr)] string inFileName);
-
-		[DllImport("simple_interface.dll", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void ffmpegCppAddVideoFilter(IntPtr handle, [MarshalAs(UnmanagedType.LPStr)] string filterString);
-
-		[DllImport("simple_interface.dll", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void ffmpegCppAddAudioFilter(IntPtr handle, [MarshalAs(UnmanagedType.LPStr)] string filterString);
-
-		[DllImport("simple_interface.dll", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void ffmpegCppGenerate(IntPtr handle);
-
-		[DllImport("simple_interface.dll", CallingConvention = CallingConvention.Cdecl)]
-		private static extern bool ffmpegCppIsError(IntPtr handle);
-
-		[DllImport("simple_interface.dll", CallingConvention = CallingConvention.Cdecl)]
-		private static extern IntPtr ffmpegCppGetError(IntPtr handle);
-
-		[DllImport("simple_interface.dll", CallingConvention = CallingConvention.Cdecl)]
-		private static extern void ffmpegCppClose(IntPtr handle);
-	}
-```
-
-If you want to use ffmpeg-cpp in a C# project, you can easily do so by making your own C-wrapper around the 
-
-# Why?
-
-I developed this project to be able to to integrate FFmpeg into our program without having to call the executable to do an operation. This is important because starting up an external executable tends to be blocked by antivirus software and can cause issues with users. It has been tested for the most common functionality, and some of the examples from https://github.com/FFmpeg/FFmpeg/tree/master/doc/examples are mirrored in the project as well.
-
-# Roadmap
-
-- Add Linux/Mac build support
-- Adding proper unit tests
-- Testing with more codecs, containers
 
 # License
 
-This library is licensed under LGPL (https://en.wikipedia.org/wiki/GNU_Lesser_General_Public_License).
+This fork will be under GPL V3 for a while. Later probably, it will be back to the LGPL.
+
+If you want the LGPL version, please go to the Raveler github repository (see above).
 
 Please note though that FFmpeg, which you will need to build this library, is not. Depending on how you build it, it is either LGPL or GPL. So if you use the GPL-version of FFmpeg in your project, this library will be GPL too.
