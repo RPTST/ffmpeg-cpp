@@ -10,4 +10,4 @@ g++ -I..  -Wall -std=c++11  \
           -I../ffmpeg-cpp \
           -o demo *.cpp \
           -L../../../build/ -lffmpeg-cpp \
-          `pkg-config --cflags --libs libavutil libavcodec libavfilter libswscale libavformat libswresample`
+          `pkg-config --cflags --libs libavutil libavcodec libavfilter libswscale libavdevice libavformat libswresample`
