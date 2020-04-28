@@ -3,6 +3,7 @@
 #include "CodecDeducer.h"
 
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -14,17 +15,60 @@ namespace ffmpegcpp
 	{
 	}
 
-	Demuxer::Demuxer(const char* fileName, AVInputFormat* inputFormat, AVDictionary *format_opts)
+        Demuxer::Demuxer(const char* fileName, AVInputFormat* inputFormat, AVDictionary *format_opts)
+        {
+	    this->fileName = fileName;
+
+	    // open input file, and allocate format context
+	    int ret;
+	    if ((ret = avformat_open_input(&containerContext, fileName, inputFormat, &format_opts)) < 0)
+	    {
+	        CleanUp();
+	        throw FFmpegException(std::string("Failed to open input container " + string(fileName)).c_str(), ret);
+	    }
+
+	    // retrieve stream information
+	    if ( (ret = (avformat_find_stream_info(containerContext, NULL))) < 0)
+	    {
+	        CleanUp();
+	        throw FFmpegException(std::string("Failed to read streams from " + string(fileName)).c_str(), ret);
+	    }
+
+	    inputStreams = new InputStream*[containerContext->nb_streams];
+	    for (unsigned int i = 0; i < containerContext->nb_streams; ++i)
+	    {
+	        inputStreams[i] = nullptr;
+	    }
+
+	    // initialize packet, set data to NULL, let the demuxer fill it
+	    pkt = av_packet_alloc();
+	    if (!pkt)
+	    {
+	        CleanUp();
+	        throw FFmpegException(std::string("Failed to create packet for input stream").c_str());
+	    }
+	    av_init_packet(pkt);
+	    pkt->data = NULL;
+	    pkt->size = 0;
+        }
+
+	Demuxer::Demuxer(const char* fileName, AVInputFormat* inputFormat, AVFormatContext * aContainerContext ,AVDictionary *format_opts)
 	{
 		this->fileName = fileName;
+                this->containerContext = aContainerContext;
 
 		// open input file, and allocate format context
 		int ret;
 		if ((ret = avformat_open_input(&containerContext, fileName, inputFormat, &format_opts)) < 0)
 		{
+			std::cerr << "Failed to open input container "  <<  "\n";
 			CleanUp();
 			throw FFmpegException(std::string("Failed to open input container " + string(fileName)).c_str(), ret);
 		}
+#ifdef DEBUG
+		else
+		    			std::cerr << "open input container() DONE"  <<  "\n";
+#endif
 
 		// retrieve stream information
 		if ( (ret = (avformat_find_stream_info(containerContext, NULL))) < 0)
@@ -32,8 +76,49 @@ namespace ffmpegcpp
 			CleanUp();
 			throw FFmpegException(std::string("Failed to read streams from " + string(fileName)).c_str(), ret);
 		}
+#ifdef DEBUG
+		else
+		    std::cerr << "avformat_find_stream_info() DONE"  <<  "\n";
+#endif
+                 av_dump_format(containerContext , 0 , fileName , 0 );
+#ifdef DEBUG
+		    			std::cerr << "av_dump_format() DONE"  <<  "\n";
+#endif
+                int VideoStreamIndx = -1;
+
+                for(unsigned int i=0; i<containerContext->nb_streams ;i++ )
+                {
+                    if( containerContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO ) // if video stream found then get the index.
+                    {
+                        cout <<  "containerContext->streams["  << i <<  "] is an AVMEDIA_TYPE_VIDEO stream " << "\n";
+                        cout << "containerContext->->streams[" << i << "]->codec->codec_type = start + " 
+                             << containerContext->streams[i]->codecpar->codec_type << "\n";
+                        cout << "AVMEDIA_TYPE_UNKNOWN = -1, AVMEDIA_TYPE_VIDEO == 0, AVMEDIA_TYPE_AUDIO == 1,AVMEDIA_TYPE_DATA == 2, AVMEDIA_TYPE_SUBTITLE = 3 " <<  "\n";
+                        cout << "containerContext->->streams[" << i << "]->codec->codec_id = " 
+                             << containerContext->streams[i]->codecpar->codec_id << "\n";
+                        cout << " (NONE = start+0, MJPEG == start+7, MPEG4 == start+12, RAWVIDEO == start+13, H264 == start+27 )" << "\n";
+
+                        VideoStreamIndx = i;
+                        break;
+                    }
+                }
+
+
+                if((VideoStreamIndx) == -1)
+                {
+                    cout<<"Error : video streams not found in demuxer ctor";
+                }
+
+                // inspired from https://code.mythtv.org/trac/ticket/13186?cversion=0&cnum_hist=2
+                AVCodecContext *pAVCodecContext = NULL;
+                AVCodec *pAVCodec = NULL;
+                pAVCodec = avcodec_find_decoder(containerContext->streams[VideoStreamIndx]->codecpar->codec_id);
+                pAVCodecContext = avcodec_alloc_context3(pAVCodec);
+                avcodec_parameters_to_context(pAVCodecContext, containerContext->streams[VideoStreamIndx]->codecpar);
 
 		inputStreams = new InputStream*[containerContext->nb_streams];
+
+// TODO : understand why doing that
 		for (unsigned int i = 0; i < containerContext->nb_streams; ++i)
 		{
 			inputStreams[i] = nullptr;
@@ -49,6 +134,8 @@ namespace ffmpegcpp
 		av_init_packet(pkt);
 		pkt->data = NULL;
 		pkt->size = 0;
+
+                avcodec_close(pAVCodecContext);
 	}
 
 	Demuxer::~Demuxer()
