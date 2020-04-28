@@ -13,6 +13,8 @@ using namespace ffmpegcpp;
 
 int main()
 {
+    avdevice_register_all();
+
     // This example will take a raw audio file and encode it into as MP3.
     try
     {
@@ -38,14 +40,9 @@ int main()
         // Create a MPEG2 codec that will encode the raw data.
         // VideoCodec * codec = new VideoCodec(AV_CODEC_ID_MJPEG);
         //TEST
-        JPGCodec * codec = new JPGCodec();
+        MJPEGCodec * codec = new MJPEGCodec();
 
-        // codec->SetOption("fmt", "v4l2");
-        // codec->SetGenericOption("input_format", "mjpeg"); // other names : yuyvj420p, yuyv422
-        // codec->SetGenericOption("input_format", "yuyv422");
-        // codec->SetGenericOption("video_size", "1280x720");
-        // codec->SetGenericOption("pix_fmts", "v4l2");
-        // codec->SetGenericOption("framerate", "{1,30}");
+        // TODO : check that ...
         // codec->SetGenericOption("bitrate", "2M");
         // codec->SetGenericOption("timestamp_time", "now");
 
@@ -88,7 +85,6 @@ int main()
         // Set the global quality of the video encoding. This maps to the command line
         // parameter -qscale and must be within range [0,31].
         //        codec->SetQualityScale(23);
-
 #endif
 
 #ifdef H264_VIDEO
@@ -136,10 +132,6 @@ int main()
         // Load the raw video file so we can process it. FFmpeg is very good at deducing the file format, 
         // even from raw video files, but if we have something weird, we can specify the properties of the format in the constructor as commented out below.
 
-        // Create an encoder that will encode the raw audio data as MP3. Tie it to the muxer so it will be written to the file.
-        VideoEncoder* encoder = new VideoEncoder(codec, muxer);
-
-        //RawVideoFileSource* videoFile = new RawVideoFileSource(videoContainer->GetFileName(), encoder);
         std::cerr << "RawVideoFileSource creation ..." << "\n";
 
         /*
@@ -151,8 +143,17 @@ int main()
 
         // normal code. Kept for the record
 #ifdef MJPEG_VIDEO
-        RawVideoFileSource* videoFile = new RawVideoFileSource("/dev/video0", 1280, 720, pix_format, encoder);
+        // Create an encoder that will encode the raw video data as mpg. Tie it to the muxer so it will be written to the file.
+        // VideoEncoder* encoder = new VideoEncoder(codec, muxer, frameRate, pix_format);
+        VideoEncoder* encoder = new VideoEncoder(codec, muxer);
+
+        //RawVideoFileSource* videoFile = new RawVideoFileSource("/dev/video0", 1280, 720, pix_format, encoder);
+        RawVideoFileSource* videoFile = new RawVideoFileSource("/dev/video0", 1280, 720, frameRate.den, pix_format, encoder);
 #else
+        // Create an encoder that will encode the raw audio data as MP3. Tie it to the muxer so it will be written to the file.
+        VideoEncoder* encoder = new VideoEncoder(codec, muxer);
+
+        //RawVideoFileSource* videoFile = new RawVideoFileSource(videoContainer->GetFileName(), encoder);
         RawVideoFileSource* videoFile = new RawVideoFileSource("../samples/big_buck_bunny.mp4", encoder);
 #endif
         std::cerr << "RawVideoFileSource creation ... done" << "\n";
@@ -165,6 +166,10 @@ int main()
         // Push all the remaining frames through.
         while (!videoFile->IsDone())
         {
+
+#ifdef MJPEG_VIDEO
+            std::cerr <<  "in the loop ..." << "\n";
+#endif
             videoFile->Step();
         }
         // Save everything to disk by closing the muxer.

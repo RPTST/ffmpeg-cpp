@@ -10,4 +10,4 @@ g++ -g -DDEBUG -I.. -Wall -std=c++11  \
           -I../ffmpeg-cpp \
           -o encode_video encode_video.cpp \
           -L../../../build/ -lffmpeg-cpp \
-          `pkg-config --cflags --libs libavutil libavcodec libswscale libavformat`
+          `pkg-config --cflags --libs libavutil libavcodec libswscale libavformat libavdevice`
