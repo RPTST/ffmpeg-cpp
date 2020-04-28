@@ -4,7 +4,7 @@ namespace ffmpegcpp
 {
 
 	JPGCodec::JPGCodec()
-		: VideoCodec(AV_CODEC_ID_MJPEG)
+		: VideoCodec(AV_CODEC_ID_MPEG2VIDEO)
 	{
 
 		// we take the default image format of the codec
