@@ -1,3 +1,4 @@
+
 #include "RawVideoFileSource.h"
 #include "FFmpegException.h"
 #include <iostream>
@@ -36,6 +37,10 @@ namespace ffmpegcpp
     }
     // only testng on Linux for the moment, but Windows should work. MacOS X = don't care
 #ifdef __linux__
+
+#ifndef DEBUG
+#define DEBUG
+#endif
     /*
         Demuxer video4linux2,v4l2 [Video4Linux2 device grab]:
         V4L2 indev AVOptions:
@@ -62,65 +67,159 @@ namespace ffmpegcpp
           -use_libv4l2       <boolean>    .D....... use libv4l2 (v4l-utils) conversion functions (default false)
     */
 
-    RawVideoFileSource::RawVideoFileSource(const char* fileName, int /* width */, int /* height */, /*int frameRate_num, int frameRate_den,*/ AVPixelFormat format, VideoFrameSink* frameSink)
+    RawVideoFileSource::RawVideoFileSource(const char* fileName, int d_width, int d_height, int d_framerate, AVPixelFormat format, FrameSink * /*aframeSink*/)
     {
-#ifdef DEBUG
-        std::cerr << "Currently in "  <<  __func__ << ". We are opening (fileName)  :  "  <<  fileName << "\n";
-        std::cerr << "width "         << width             << "\n";
-        std::cerr << "height "        << height            << "\n";
-        std::cerr << "format "        << format            << "\n";
-#endif
+        // mandatory under Linux
+        avdevice_register_all();
 
+        width  = d_width;
+        height = d_height;
+        framerate = d_framerate;
 #ifdef _WIN32
-        const char input_device[] = "dshow"; // I'm using dshow when cross compiling :-)
+        // Fixed by the operating system
+        const char * input_device = "dshow"; // I'm using dshow when cross compiling :-)
 #elif defined(__linux__)
-        const char input_device[] = "v4l2";
-#endif
-        AVDictionary* options = NULL;
-        av_dict_set(&options, "framerate", "24", 0);
-        av_dict_set(&options, "video_size", "1280x720", 0);
-        AVInputFormat* input_fmt = av_find_input_format(input_device);
-        AVFormatContext* fmt_ctx = NULL;
+        // libavutil, pixdesc.h
+        const char * pix_fmt_name = av_get_pix_fmt_name(format);
+        const char * pix_fmt_name2 = av_get_pix_fmt_name(AV_PIX_FMT_YUVJ420P); // = "mjpeg"
+        enum AVPixelFormat pix_name = av_get_pix_fmt("mjpeg");
+        enum AVPixelFormat pix_name2 = av_get_pix_fmt("rawvideo");
 
-        if ((avformat_open_input(&fmt_ctx, fileName,input_fmt, NULL))!=0)
+        cout<<"AVPixelFormat name of AV_PIX_FMT_YUV420P : " << pix_fmt_name << "\n";
+        cout<<"AVPixelFormat name of AV_PIX_FMT_YUVJ420P : " << pix_fmt_name2 << "\n";
+        cout<<"PixelFormat value for \"mjpeg\" : " << pix_name << "\n";
+        cout<<"PixelFormat value for \"rawvideo\" : " << pix_name2 << "\n";
+
+        // Fixed by the operating system
+        const char * input_device = "v4l2";
+        const char * device_name = "/dev/video0";
+#endif
+
+#ifdef DEBUG
+        std::cerr << "Currently in "       <<  __func__    << ". We are opening (fileName)  :  "  <<  fileName << std::endl;
+        std::cerr << "width "              << width        << "\n";
+        std::cerr << "height "             << height       << "\n";
+        std::cerr << "format "             << format       << "\n";
+        std::cerr << "filename "           << fileName     << "\n";
+        std::cerr << "device_name "        << device_name  << "\n";
+        std::cerr << "framerate (int) :  " << framerate    << "\n";
+#endif
+        //  /!\ v4l2  is a DEMUXER for ffmpeg !!!  (not a device or format or whatever else !! )
+        // important: AVCodecContext can be freed on failure (easy with mjpeg ...)
+        //int VideoStreamIndx = -1;
+
+        ///pAVCodecContext = NULL;
+        pAVCodec = NULL;
+
+        pAVFormatContextIn = NULL;
+        options = NULL;
+
+        pAVFormatContextIn = avformat_alloc_context();
+        pAVFormatContextIn->video_codec_id = AV_CODEC_ID_MJPEG;
+
+        inputFormat = av_find_input_format(input_device);
+
+        // WORKS OK TOO
+        char videoSize[32];
+        sprintf(videoSize, "%dx%d", width, height);
+        av_dict_set(&options, "video_size", videoSize, 0);
+        // Other (fixed) way :
+        // av_dict_set(&options, "video_size", "1280x720", 0);
+        //av_dict_set(&options, "video_size", "1920x1080", 0);
+
+        const char * framerate_option_name = "frameRate";
+        char frameRateValue[10];
+        sprintf(frameRateValue, "%d", framerate);
+
+#ifdef DEBUG
+        std::cerr << "framerate_option_name :  " << framerate_option_name  << "\n";
+        std::cerr << "frameRateValue        :  " << frameRateValue  << "\n";
+#endif
+        av_dict_set(&options, "framerate", "30", 0);
+//        av_dict_set(&options, framerate_option_name, frameRateValue, 0);
+        av_dict_set(&options, "pixel_format", pix_fmt_name2, 0);  //  "mjpeg" "yuvj420p"
+        //av_dict_set(&options, "pixel_format", pix_fmt_name2, 0);  //  "mjpeg" "yuvj420p"
+
+        ///TEST
+        //av_dict_set(&options, "pix_fmt", "yuvj420p", 0);  //  "mjpeg" "yuvj420p"
+        av_dict_set(&options, "use_wallclock_as_timestamps", "1", 0);
+
+        try
+        {
+#ifdef DEBUG
+            std::cerr << "Creating new demuxer "   << "\n";
+#endif
+            demuxer = new Demuxer(fileName, inputFormat, pAVFormatContextIn, options);
+#ifdef DEBUG
+            std::cout << "demuxer created "   << "\n";
+#endif
+//            demuxer->DecodeVideoStream(VideoStreamIndx, aframeSink);
+#ifdef DEBUG
+//            std::cout << "demuxer->DecodeBestVideoStream(frameSink) DONE "   << "\n";
+#endif
+
+        }
+        catch (FFmpegException e)
+        {
+            CleanUp();
+            throw e;
+        }
+
+/*
+        if ((avformat_open_input(&pAVFormatContextIn, device_name, inputFormat, &options))>=0)
         {
             // TODO : verify it's mandatory
+#ifdef DEBUG
             std::cerr <<  ">>>  av_input_open_returned 1 " << "\n";
-
-            const char* pixelFormatName = av_get_pix_fmt_name(format);
-            av_dict_set(&options, "pixel_format", pixelFormatName, 0);
+#endif
 
             // create the demuxer
-            // try
-            // {
+            try
+            {
 #ifdef DEBUG
-            std::cerr << "Creating new muxer "   << "\n";
+                std::cerr << "Creating new demuxer "   << "\n";
 #endif
-            // FIXME BROKEN : the encoder is NOT correctly initialized
-            //          but the file is open (/dev/video0)
+                // inspired from https://code.mythtv.org/trac/ticket/13186?cversion=0&cnum_hist=2
+                pAVCodecContext = avcodec_alloc_context3(pAVCodec);
+                pAVCodec = avcodec_find_decoder(pAVFormatContextIn->streams[VideoStreamIndx]->codecpar->codec_id);
+                avcodec_parameters_to_context(pAVCodecContext, pAVFormatContextIn->streams[VideoStreamIndx]->codecpar);
 
-            /// maybe simply open a file, and grab frames instead ?
-            demuxer = new Demuxer(fileName, input_fmt, options);
+                if(pAVCodec == NULL)
+                    fprintf(stderr,"Unsupported codec !");
+
+                int value = avcodec_open2(pAVCodecContext , pAVCodec , NULL);
+
+                if( value < 0)
+                    cout<<"Error : Could not open codec";
+
+                // DONE : everything works already separately : 
+                //   - pass the parameters (device name, width, height, framerate and pixel format)
+                //   - initialise the AVContext,
+                //   - initialize the AVCodec, and fill it with correct values
+                //   - find the video stream, and fill it withcorrect values
+                //   - initialize the device (/dev/video0 here) with avformat_open_input() 
+                //     => the light is on, right video_size, framerate, colors, and so on
+                //  
+                // FIXME BROKEN : next step : create the demuxer is broken
+
+                /// maybe simply open a file, and grab frames instead ?
+
+                demuxer = new Demuxer(fileName, inputFormat, options);
 #ifdef DEBUG
-            std::cerr << "Muxer created "   << "\n";
+                std::cout << "Muxer created "   << "\n";
 #endif
-            demuxer->DecodeBestVideoStream(frameSink);
+                demuxer->DecodeVideoStream(VideoStreamIndx, aframeSink);
 #ifdef DEBUG
-            std::cerr << "demuxer->DecodeBestVideoStream(frameSink) DONE "   << "\n";
+                std::cout << "demuxer->DecodeBestVideoStream(frameSink) DONE "   << "\n";
 #endif
-            // }
-            // catch (FFmpegException e)
-            // {
-            //     CleanUp();
-            // throw e;
-            // }
             }
-            else
-                std::cerr << "input_device not created"   << "\n";
-
-            avformat_close_input(&fmt_ctx);
-            avformat_free_context(fmt_ctx);
-            av_dict_free(&options);
+            catch (FFmpegException e)
+            {
+                CleanUp();
+                throw e;
+            }
+        }
+*/
 
 #ifdef DEBUG
             std::cerr << "returning from " << __func__  << "\n";
@@ -174,6 +273,10 @@ namespace ffmpegcpp
     {
         if (demuxer != nullptr)
         {
+            avformat_close_input(&pAVFormatContextIn);
+            avformat_free_context(pAVFormatContextIn);
+            av_dict_free(&options);
+
             delete demuxer;
             demuxer = nullptr;
         }
