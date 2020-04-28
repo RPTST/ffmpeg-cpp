@@ -15,4 +15,5 @@ extern "C" {
 	#include <libavfilter/buffersrc.h>
 	#include <libswresample/swresample.h>
 	#include <libavutil/audio_fifo.h>
+	#include <libavdevice/avdevice.h>
 }
