@@ -35,7 +35,7 @@ int main()
 
 #ifdef MJPEG_VIDEO
 
-        std::cerr << "Using JPG Codec" << "\n";
+        std::cerr << "Using MJPEG Codec" << "\n";
 
         // Create a MPEG2 codec that will encode the raw data.
         // VideoCodec * codec = new VideoCodec(AV_CODEC_ID_MJPEG);
