@@ -71,11 +71,11 @@ namespace ffmpegcpp
         // av_dict_set(&options, "video_size", "1280x720", 0);
         //av_dict_set(&options, "video_size", "1920x1080", 0);
 
+#ifdef DEBUG
         const char * framerate_option_name = "frameRate";
         char frameRateValue[10];
         sprintf(frameRateValue, "%d", framerate);
 
-#ifdef DEBUG
         std::cerr << "framerate_option_name :  " << framerate_option_name  << "\n";
         std::cerr << "frameRateValue        :  " << frameRateValue  << "\n";
 #endif
