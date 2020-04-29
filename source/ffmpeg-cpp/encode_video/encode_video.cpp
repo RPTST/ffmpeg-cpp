@@ -38,7 +38,7 @@ public:
 
 	// write the first channel's color data to a PGM file.
 	// This raw image file can be opened with most image editing programs.
-	snprintf(fileNameBuffer, sizeof(fileNameBuffer), "poub/frame-%d.pgm", frameNumber);
+	snprintf(fileNameBuffer, sizeof(fileNameBuffer), "frames/frame-%d.pgm", frameNumber);
 	pgm_save(frame->data[0], frame->linesize[0],
 	    frame->width, frame->height, fileNameBuffer);
     }
