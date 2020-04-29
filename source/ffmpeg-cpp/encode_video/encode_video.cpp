@@ -1,15 +1,83 @@
 #include <iostream>
 #include "ffmpegcpp.h"
 
-//#define MJPEG_VIDEO
+#define MJPEG_VIDEO
 //#define MPEG4_VIDEO
 //#define MPEG2_VIDEO
-#define H264_VIDEO
+//#define H264_VIDEO
 
 using std::cerr;
 using std::cout;
 
 using namespace ffmpegcpp;
+
+
+using namespace std;
+using namespace ffmpegcpp;
+
+class PGMFileSink : public VideoFrameSink, public FrameWriter
+{
+public:
+
+    PGMFileSink()
+    {
+    }
+
+    FrameSinkStream* CreateStream()
+    {
+	stream = new FrameSinkStream(this, 0);
+	return stream;
+    }
+
+    virtual void WriteFrame(int /* streamIndex */, AVFrame* frame, StreamData*  /* streamData */)
+    {
+	++frameNumber;
+	printf("saving frame %3d\n", frameNumber);
+	fflush(stdout);
+
+
+	// write the first channel's color data to a PGM file.
+	// This raw image file can be opened with most image editing programs.
+	snprintf(fileNameBuffer, sizeof(fileNameBuffer), "poub/frame-%d.pgm", frameNumber);
+	pgm_save(frame->data[0], frame->linesize[0],
+	    frame->width, frame->height, fileNameBuffer);
+    }
+
+    void pgm_save(unsigned char *buf, int wrap, int xsize, int ysize,
+	char *filename)
+    {
+	FILE *f;
+	int i;
+
+	f = fopen(filename, "w");
+	fprintf(f, "P5\n%d %d\n%d\n", xsize, ysize, 255);
+	for (i = 0; i < ysize; i++)
+	    fwrite(buf + i * wrap, 1, xsize, f);
+	fclose(f);
+    }
+
+    virtual void Close(int /* streamIndex */)
+    {
+	delete stream;
+    }
+
+    virtual bool IsPrimed()
+    {
+	// Return whether we have all information we need to start writing out data.
+	// Since we don't really need any data in this use case, we are always ready.
+	// A container might only be primed once it received at least one frame from each source
+	// it will be muxing together (see Muxer.cpp for how this would work then).
+	return true;
+    }
+
+private:
+    char fileNameBuffer[1024];
+    int frameNumber = 0;
+    FrameSinkStream* stream;
+
+};
+
+
 
 int main()
 {
@@ -41,6 +109,15 @@ int main()
         // VideoCodec * codec = new VideoCodec(AV_CODEC_ID_MJPEG);
         //TEST
         MJPEGCodec * codec = new MJPEGCodec();
+
+        //  OUTPUT CODEC, linked to the encoder ...
+        H264Codec  * vcodec = new H264Codec();
+        vcodec->SetGenericOption("b", "2M");
+        vcodec->SetGenericOption("bit_rate", "2M");
+        vcodec->SetProfile("high10"); // baseline, main, high, high10, high422
+        vcodec->SetTune("film");  // film animation grain stillimage psnr ssim fastdecode zerolatency
+        vcodec->SetPreset("veryslow"); // fast, medium, slow slower, veryslow placebo
+        vcodec->SetCrf(23);
 
         // TODO : check that ...
         // codec->SetGenericOption("bitrate", "2M");
@@ -143,12 +220,19 @@ int main()
 
         // normal code. Kept for the record
 #ifdef MJPEG_VIDEO
-        // Create an encoder that will encode the raw video data as mpg. Tie it to the muxer so it will be written to the file.
-        // VideoEncoder* encoder = new VideoEncoder(codec, muxer, frameRate, pix_format);
-        VideoEncoder* encoder = new VideoEncoder(codec, muxer);
+//WORKS
+        PGMFileSink* fileSink = new PGMFileSink();
+//        FrameSink* fileSink = new FrameSink();
 
         //RawVideoFileSource* videoFile = new RawVideoFileSource("/dev/video0", 1280, 720, pix_format, encoder);
-        RawVideoFileSource* videoFile = new RawVideoFileSource("/dev/video0", 1280, 720, frameRate.den, pix_format, encoder);
+        RawVideoFileSource* videoFile = new RawVideoFileSource("/dev/video0", 1280, 720, frameRate.den, pix_format, fileSink);
+
+        // Create an encoder that will encode the raw video data as mpg. Tie it to the muxer so it will be written to the file.
+        // VideoEncoder* encoder = new VideoEncoder(codec, muxer, frameRate, pix_format);
+// FIXME
+//        VideoEncoder* encoder = new VideoEncoder(vcodec, muxer);
+
+
 #else
         // Create an encoder that will encode the raw audio data as MP3. Tie it to the muxer so it will be written to the file.
         VideoEncoder* encoder = new VideoEncoder(codec, muxer);
