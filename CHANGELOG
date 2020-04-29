@@ -7,6 +7,25 @@ Changelog  Copyright Eric Bachard  2020/04/22
 "                                                                                    "
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+
+FIXED : can write frames (grey currently) from mjpeg webcam !
+
+RawVideoFileSource creation ... done
+Entering in : videoFile->PreparePipeline()
+saving frame   1
+videoFile->PreparePipeline() done ...
+in the loop ...
+saving frame   2
+in the loop ...
+saving frame   3
+in the loop ...
+saving frame   4
+in the loop ...
+saving frame   5
+
+:-)
+
+
 2020/04/29
 
 Current status:  run encode_video gives :
