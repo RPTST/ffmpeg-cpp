@@ -52,7 +52,7 @@ namespace ffmpegcpp
 	    pkt->size = 0;
         }
 
-	Demuxer::Demuxer(const char* fileName, AVInputFormat* inputFormat, AVFormatContext * aContainerContext ,AVDictionary *format_opts)
+	Demuxer::Demuxer(const char* fileName, AVInputFormat* inputFormat, AVDictionary *format_opts, AVFormatContext * aContainerContext)
 	{
 		this->fileName = fileName;
                 this->containerContext = aContainerContext;

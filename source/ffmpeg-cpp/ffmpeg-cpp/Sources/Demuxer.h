@@ -16,7 +16,7 @@ namespace ffmpegcpp
 
 		Demuxer(const char* fileName);
 		Demuxer(const char* fileName, AVInputFormat* inputFormat, AVDictionary *inputFormatOptions);
-		Demuxer(const char* fileName, AVInputFormat* inputFormat, AVFormatContext * aContainerContext, AVDictionary *inputFormatOptions);
+		Demuxer(const char* fileName, AVInputFormat* inputFormat, AVDictionary *inputFormatOptions, AVFormatContext * aContainerContext);
 		~Demuxer();
 
 		void DecodeBestAudioStream(FrameSink* frameSink);

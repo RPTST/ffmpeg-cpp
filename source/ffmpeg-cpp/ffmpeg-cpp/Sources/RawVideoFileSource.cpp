@@ -25,7 +25,7 @@ namespace ffmpegcpp
     // only testng on Linux for the moment, but Windows should work. MacOS X = don't care
 #ifdef __linux__
 
-    RawVideoFileSource::RawVideoFileSource(const char* fileName, int d_width, int d_height, int d_framerate, AVPixelFormat format, FrameSink * /*aframeSink*/)
+    RawVideoFileSource::RawVideoFileSource(const char* fileName, int d_width, int d_height, int d_framerate, AVPixelFormat format, FrameSink * aFrameSink)
     {
         // mandatory under Linux
         avdevice_register_all();
@@ -33,6 +33,7 @@ namespace ffmpegcpp
         width  = d_width;
         height = d_height;
         framerate = d_framerate;
+        frameSink = aFrameSink;
 #ifdef _WIN32
         // Fixed by the operating system
         const char * input_device = "dshow"; // I'm using dshow when cross compiling :-)
@@ -50,7 +51,7 @@ namespace ffmpegcpp
 
         // Fixed by the operating system
         const char * input_device = "v4l2";
-        const char * device_name = "/dev/video0";
+//        const char * device_name = "/dev/video0";
 #endif
         //  /!\ v4l2  is a DEMUXER for ffmpeg !!!  (not a device or format or whatever else !! )
         // important: AVCodecContext can be freed on failure (easy with mjpeg ...)
@@ -86,10 +87,8 @@ namespace ffmpegcpp
 
         try
         {
-            demuxer = new Demuxer(fileName, inputFormat, pAVFormatContextIn, options);
-//            causing crash + a new call to the Ctor ?
-//            demuxer->DecodeVideoStream(VideoStreamIndx, aframeSink);
-
+            demuxer = new Demuxer(fileName, inputFormat, options, pAVFormatContextIn);
+            demuxer->DecodeBestVideoStream(frameSink);
         }
         catch (FFmpegException e)
         {

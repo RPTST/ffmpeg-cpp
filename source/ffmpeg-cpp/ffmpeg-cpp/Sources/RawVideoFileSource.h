@@ -35,6 +35,6 @@ namespace ffmpegcpp
 		int                  framerate;
 		void                 CleanUp();
 		Demuxer            * demuxer;
-//		FrameSink          * frameSink;
+		FrameSink          * frameSink;
 	};
 }
