@@ -15,6 +15,8 @@ using namespace ffmpegcpp;
 using namespace std;
 using namespace ffmpegcpp;
 
+//TODO : use existing interface instead ?
+
 class PGMFileSink : public VideoFrameSink, public FrameWriter
 {
 public:
@@ -25,49 +27,49 @@ public:
 
     FrameSinkStream* CreateStream()
     {
-	stream = new FrameSinkStream(this, 0);
-	return stream;
+        stream = new FrameSinkStream(this, 0);
+        return stream;
     }
 
     virtual void WriteFrame(int /* streamIndex */, AVFrame* frame, StreamData*  /* streamData */)
     {
-	++frameNumber;
-	printf("saving frame %3d\n", frameNumber);
-	fflush(stdout);
+        ++frameNumber;
+        printf("saving frame %3d\n", frameNumber);
+        fflush(stdout);
 
-
-	// write the first channel's color data to a PGM file.
-	// This raw image file can be opened with most image editing programs.
-	snprintf(fileNameBuffer, sizeof(fileNameBuffer), "frames/frame-%d.pgm", frameNumber);
-	pgm_save(frame->data[0], frame->linesize[0],
-	    frame->width, frame->height, fileNameBuffer);
+        // write the first channel's color data to a PGM file.
+        // This raw image file can be opened with most image editing programs.
+        snprintf(fileNameBuffer, sizeof(fileNameBuffer), "frames/frame-%d.pgm", frameNumber);
+        pgm_save(frame->data[0], frame->linesize[0], frame->width, frame->height, fileNameBuffer);
     }
 
-    void pgm_save(unsigned char *buf, int wrap, int xsize, int ysize,
-	char *filename)
+    void pgm_save(unsigned char *bufy, int wrap, int xsize, int ysize, char *filename)
     {
-	FILE *f;
-	int i;
+        FILE *f;
+        int i;
+        f = fopen(filename, "w");
 
-	f = fopen(filename, "w");
-	fprintf(f, "P5\n%d %d\n%d\n", xsize, ysize, 255);
-	for (i = 0; i < ysize; i++)
-	    fwrite(buf + i * wrap, 1, xsize, f);
-	fclose(f);
+        fprintf(f, "P5\n%d %d\n%d\n", xsize, ysize, 255);
+
+        for (i = 0; i < ysize; i++)
+        {
+            fwrite(bufy + i * wrap, 1, xsize, f);
+        }
+        fclose(f);
     }
 
     virtual void Close(int /* streamIndex */)
     {
-	delete stream;
+        delete stream;
     }
 
     virtual bool IsPrimed()
     {
-	// Return whether we have all information we need to start writing out data.
-	// Since we don't really need any data in this use case, we are always ready.
-	// A container might only be primed once it received at least one frame from each source
-	// it will be muxing together (see Muxer.cpp for how this would work then).
-	return true;
+        // Return whether we have all information we need to start writing out data.
+        // Since we don't really need any data in this use case, we are always ready.
+        // A container might only be primed once it received at least one frame from each source
+        // it will be muxing together (see Muxer.cpp for how this would work then).
+        return true;
     }
 
 private:
@@ -128,34 +130,6 @@ int main()
         AVRational frameRate = {1, 30};
         AVPixelFormat pix_format = AV_PIX_FMT_YUVJ420P; // = V4L2_PIX_FMT_MJPEG
 
-        // -t duration         record or transcode "duration" seconds of audio/video
-        // -to time_stop       record or transcode stop time
-        // -fs limit_size      set the limit file size in bytes
-        // -ss time_off        set the start time offset
-        // -sseof time_off     set the start time offset relative to EOF
-        // -seek_timestamp     enable/disable seeking by timestamp with -ss
-        // -timestamp time     set the recording timestamp ('now' to set the current time)
-
-        // ~ $ ffmpeg -h encoder=mjpeg
-        // Encoder mjpeg [MJPEG (Motion JPEG)]:
-        // General capabilities: threads intraonly. Threading capabilities: frame and slice. Supported pixel formats: yuvj420p yuvj422p yuvj444p
-        //
-        // (lot of lines ... )
-        // ffmpeg -h format=yuvj420p
- 
-        // TRACKS :   ffmpeg -f v4l2 -list_formats all -i /dev/video0
-        // returns : [video4linux2,v4l2 @ 0x55e911c86780] 
-        //Raw       :     yuyv422 :           
-        // YUYV 4:2:2 : 640x480 160x90 160x120 176x144 320x180 320x240 352x288 432x240 640x360 800x448 800x600 864x480 960x720 1024x576
-        //              1280x720 1600x896 1920x1080 2304x1296 2304x1536
-        // [video4linux2,v4l2 @ 0x55e911c86780] Compressed:       mjpeg :        
-        // Motion-JPEG : 640x480 160x90 160x120 176x144 320x180 320x240 352x288 432x240 640x360 800x448 800x600 864x480 960x720 1024x576
-        // 1280x720 1600x896 1920x1080  /dev/video0: Immediate exit requested
-
-        // + found in /usr/include/linux/videodev2.h:
-        //#define V4L2_PIX_FMT_MJPEG    v4l2_fourcc('M', 'J', 'P', 'G') /* Motion-JPEG   */
-        ///AVPixelFormat pix_format = V4L2_PIX_FMT_MJPEG;
-
         codec->Open(width, height, &frameRate, pix_format);
         std::cerr << "codec Open() done" << "\n";
 
@@ -204,35 +178,14 @@ int main()
         codec->SetPreset("veryslow"); // fast, medium, slow slower, veryslow placebo
         codec->SetCrf(23);
 #endif
-                                    // GENERIC CODE
-
-        // Load the raw video file so we can process it. FFmpeg is very good at deducing the file format, 
-        // even from raw video files, but if we have something weird, we can specify the properties of the format in the constructor as commented out below.
-
-        std::cerr << "RawVideoFileSource creation ..." << "\n";
-
-        /*
-            gdb) set codec->codecContext->bit_rate=400000
-            (gdb) set encoder->finalFrameRate={1,30}
-            (gdb) set encoder->finalPixelFormat=AV_PIX_FMT_YUVJ420P
-            (gdb) set encoder->codec=codec
-        */
 
         // normal code. Kept for the record
 #ifdef MJPEG_VIDEO
-//WORKS
         PGMFileSink* fileSink = new PGMFileSink();
-//        FrameSink* fileSink = new FrameSink();
 
-        //RawVideoFileSource* videoFile = new RawVideoFileSource("/dev/video0", 1280, 720, pix_format, encoder);
-        RawVideoFileSource* videoFile = new RawVideoFileSource("/dev/video0", 1280, 720, frameRate.den, pix_format, fileSink);
-
-        // Create an encoder that will encode the raw video data as mpg. Tie it to the muxer so it will be written to the file.
-        // VideoEncoder* encoder = new VideoEncoder(codec, muxer, frameRate, pix_format);
-// FIXME
-//        VideoEncoder* encoder = new VideoEncoder(vcodec, muxer);
-
-
+        RawVideoFileSource* videoFile = new RawVideoFileSource("/dev/video0", 1280, 720, frameRate.den, pix_format);
+        videoFile->setFrameSink(fileSink);;
+        videoFile->demuxer->DecodeBestVideoStream(fileSink);
 #else
         // Create an encoder that will encode the raw audio data as MP3. Tie it to the muxer so it will be written to the file.
         VideoEncoder* encoder = new VideoEncoder(codec, muxer);
@@ -240,7 +193,6 @@ int main()
         //RawVideoFileSource* videoFile = new RawVideoFileSource(videoContainer->GetFileName(), encoder);
         RawVideoFileSource* videoFile = new RawVideoFileSource("../samples/big_buck_bunny.mp4", encoder);
 #endif
-        std::cerr << "RawVideoFileSource creation ... done" << "\n";
         std::cerr << "Entering in : videoFile->PreparePipeline()" << "\n";
 
         // Prepare the output pipeline. This will push a small amount of frames to the file sink until it IsPrimed returns true.
