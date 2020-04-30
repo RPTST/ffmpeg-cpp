@@ -1,6 +1,8 @@
 #include <iostream>
 #include "ffmpegcpp.h"
 
+// TODO : write other demos !
+// choose one case only. Else the build will be broken ...
 #define MJPEG_VIDEO
 //#define MPEG4_VIDEO
 //#define MPEG2_VIDEO
@@ -179,7 +181,6 @@ int main()
         codec->SetCrf(23);
 #endif
 
-        // normal code. Kept for the record
 #ifdef MJPEG_VIDEO
         PGMFileSink* fileSink = new PGMFileSink();
 
