@@ -1,20 +1,9 @@
 #include <iostream>
 #include "ffmpegcpp.h"
 
-// TODO : write other demos !
-// choose one case only. Else the build will be broken ...
-//#define MJPEG_VIDEO
-//#define MPEG4_VIDEO
-//#define MPEG2_VIDEO
-#define H264_VIDEO
-
 using std::cerr;
 using std::cout;
 
-using namespace ffmpegcpp;
-
-
-using namespace std;
 using namespace ffmpegcpp;
 
 //TODO : use existing interface instead ?
@@ -87,32 +76,34 @@ int main()
 {
     avdevice_register_all();
 
-    // This example will take a raw audio file and encode it into as MP3.
+    // This example is a work in progress, means unfinished.
+    // DONE:
+    // - detect the webcam
+    // - set the right parameters (for instance, 1920x1080@30fps, Logitech C920 / C922 / Brio  (other webcams untested)
+    // - activate the webcam
+    // - create the stream
+    // - create the demuxer
+    // - create the frames
+    // - convert them into grey (type 5) .ppm
+    //
+    // - TODO:
+    // - convert YUV frames into RGB frames
+    // - initialize  the encoder and build the video at the end.
+    // - create the video (.mpg or whatever)
+    // - improve, and use better the implementation
+    //
+    // GOAL : 
+    // This program aims to take the stream from a webcam  (mjpeg stream),
+    // turn it into raw frames, and encode it into as VP9 video (HEVC codec).
+
+
     try
     {
         // Create a muxer that will output the video as MKV.
-        Muxer* muxer = new Muxer("output.mpg");
-
-#ifdef MPEG2_VIDEO
-        std::cerr << "Using MPEG2 Codec" << "\n";
-
-        // Create a MPEG2 codec that will encode the raw data.
-        VideoCodec * codec = new VideoCodec("mpeg2video");
-        //VideoCodec * codec = new VideoCodec(AV_CODEC_ID_MJPEG);
-        // Set the global quality of the video encoding. This maps to the command line
-        // parameter -qscale and must be within range [0,31].
-        codec->SetQualityScale(23);
-        // Set the bit rate option -b:v 2M
-        codec->SetGenericOption("b", "2M");
-#endif
-
-#ifdef MJPEG_VIDEO
+        Muxer* muxer = new Muxer("webcam_to_VP9.mpg");
 
         std::cerr << "Using MJPEG input Codec" << "\n";
 
-        // Create a MPEG2 codec that will encode the raw data.
-        // VideoCodec * codec = new VideoCodec(AV_CODEC_ID_MJPEG);
-        //TEST
         MJPEGCodec * codec = new MJPEGCodec();
 
         //  OUTPUT CODEC, linked to the encoder ...
@@ -124,80 +115,19 @@ int main()
         vcodec->SetPreset("veryslow"); // fast, medium, slow slower, veryslow placebo
         vcodec->SetCrf(23);
 
-        // TODO : check that ...
-        // codec->SetGenericOption("bitrate", "2M");
-        // codec->SetGenericOption("timestamp_time", "now");
-
         int width = 1280;
         int height = 720;
         AVRational frameRate = {1, 30};
         AVPixelFormat pix_format = AV_PIX_FMT_YUVJ420P; // = V4L2_PIX_FMT_MJPEG
 
         codec->Open(width, height, &frameRate, pix_format);
-        std::cerr << "codec Open() done" << "\n";
 
-        // Set the global quality of the video encoding. This maps to the command line
-        // parameter -qscale and must be within range [0,31].
-        //        codec->SetQualityScale(23);
-#endif
+        //VideoEncoder * vEncoder = new VideoEncoder(codec, muxer);
 
-#ifdef H264_VIDEO
-        std::cerr << "Using H264 Codec" << "\n";
-
-        // Default is : 
-        // profile = main, crf = 10, preset = medium (default), tune = film or animation
-        H264Codec* codec = new H264Codec();
-        // TODO / FIXME
-        // H264_VAAPICodec* codec = new H264_VAAPICodec();
-        // FIXME : the buffer size seems to NOT being set ?
-        codec->SetGenericOption("b", "2M");
-        codec->SetGenericOption("bit_rate", "2M");
-        //codec->SetGenericOption("low_power", true);
-        codec->SetProfile("high10"); // baseline, main, high, high10, high422
-        codec->SetTune("film");  // film animation grain stillimage psnr ssim fastdecode zerolatency
-        codec->SetPreset("veryslow"); // fast, medium, slow slower, veryslow placebo
-
-        // https://slhck.info/video/2017/03/01/rate-control.html
-        //https://slhck.info/video/2017/02/24/crf-guide.html
-        // about crf (very important !! )
-        //
-        //   0       <------   18  <-------  23 -----> 28 ------> 51
-        //  lossless       better                 worse          worst
-        codec->SetCrf(23);
-#endif
-
-#ifdef MPEG4_VIDEO
-        std::cerr << "Using MPEG4 Codec" << "\n";
-
-        MPEG4Codec* codec = new MPEG4Codec();
-
-        // Default is : 
-        // profile = main, crf = 10, preset = medium (default), tune = film or animation
-        // FIXME : the buffer size seems to NOT being set ?
-        codec->SetGenericOption("b", "4M");
-        codec->SetGenericOption("bit_rate", "2M");
-        codec->SetProfile("high10"); // baseline, main, high, high10, high422
-        codec->SetTune("film");  // film animation grain stillimage psnr ssim fastdecode zerolatency
-        codec->SetPreset("veryslow"); // fast, medium, slow slower, veryslow placebo
-        codec->SetCrf(23);
-#endif
-
-
-
-#ifdef MJPEG_VIDEO
         PGMFileSink* fileSink = new PGMFileSink();
-
         RawVideoFileSource* videoFile = new RawVideoFileSource("/dev/video0", 1280, 720, frameRate.den, pix_format);
         videoFile->setFrameSink(fileSink);;
         videoFile->demuxer->DecodeBestVideoStream(fileSink);
-#else
-        // Create an encoder that will encode the raw audio data as MP3. Tie it to the muxer so it will be written to the file.
-        VideoEncoder* encoder = new VideoEncoder(codec, muxer);
-
-        //RawVideoFileSource* videoFile = new RawVideoFileSource(videoContainer->GetFileName(), encoder);
-        RawVideoFileSource* videoFile = new RawVideoFileSource("../samples/big_buck_bunny.mp4", encoder);
-#endif
-        std::cerr << "Entering in : videoFile->PreparePipeline()" << "\n";
 
         // Prepare the output pipeline. This will push a small amount of frames to the file sink until it IsPrimed returns true.
         videoFile->PreparePipeline();
@@ -206,10 +136,6 @@ int main()
         // Push all the remaining frames through.
         while (!videoFile->IsDone())
         {
-
-#ifdef MJPEG_VIDEO
-            std::cerr <<  "in the loop ..." << "\n";
-#endif
             videoFile->Step();
         }
         // Save everything to disk by closing the muxer.
