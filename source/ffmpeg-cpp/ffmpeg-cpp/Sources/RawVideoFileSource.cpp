@@ -25,7 +25,7 @@ namespace ffmpegcpp
     // only testng on Linux for the moment, but Windows should work. MacOS X = don't care
 #ifdef __linux__
 
-    RawVideoFileSource::RawVideoFileSource(const char* fileName, int d_width, int d_height, int d_framerate, AVPixelFormat format, FrameSink * aFrameSink)
+    RawVideoFileSource::RawVideoFileSource(const char* fileName, int d_width, int d_height, int d_framerate, AVPixelFormat format)
     {
         // mandatory under Linux
         avdevice_register_all();
@@ -33,7 +33,7 @@ namespace ffmpegcpp
         width  = d_width;
         height = d_height;
         framerate = d_framerate;
-        frameSink = aFrameSink;
+        //frameSink = aFrameSink;
 #ifdef _WIN32
         // Fixed by the operating system
         const char * input_device = "dshow"; // I'm using dshow when cross compiling :-)
@@ -78,8 +78,10 @@ namespace ffmpegcpp
 
         std::cerr << "framerate_option_name :  " << framerate_option_name  << "\n";
         std::cerr << "frameRateValue        :  " << frameRateValue  << "\n";
-#endif
+#else
         av_dict_set(&options, "framerate", "30", 0);
+#endif
+
 //        av_dict_set(&options, framerate_option_name, frameRateValue, 0);
         av_dict_set(&options, "pixel_format", pix_fmt_name2, 0);  //  "mjpeg" "yuvj420p"
         //av_dict_set(&options, "pixel_format", pix_fmt_name2, 0);  //  "mjpeg" "yuvj420p"
@@ -88,7 +90,6 @@ namespace ffmpegcpp
         try
         {
             demuxer = new Demuxer(fileName, inputFormat, options, pAVFormatContextIn);
-            demuxer->DecodeBestVideoStream(frameSink);
         }
         catch (FFmpegException e)
         {
@@ -97,7 +98,7 @@ namespace ffmpegcpp
         }
 
 
-        }
+    }
 #endif  /*  __linux__ */
 
         // Doesn't work for now. See the header for more info.
@@ -153,6 +154,11 @@ namespace ffmpegcpp
             delete demuxer;
             demuxer = nullptr;
         }
+    }
+
+    void RawVideoFileSource::setFrameSink(FrameSink * aFrameSink)
+    {
+        frameSink = aFrameSink;
     }
 
     void RawVideoFileSource::PreparePipeline()
