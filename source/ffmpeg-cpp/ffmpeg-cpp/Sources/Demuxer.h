@@ -10,49 +10,51 @@
 
 namespace ffmpegcpp
 {
-	class Demuxer : public InputSource
-	{
-	public:
+    class Demuxer : public InputSource
+    {
+    public:
 
-		Demuxer(const char* fileName);
-		Demuxer(const char* fileName, AVInputFormat* inputFormat, AVDictionary *inputFormatOptions);
-		Demuxer(const char* fileName, AVInputFormat* inputFormat, AVDictionary *inputFormatOptions, AVFormatContext * aContainerContext);
-		~Demuxer();
+        Demuxer(const char* fileName);
+        Demuxer(const char* fileName, AVInputFormat* inputFormat, AVDictionary *inputFormatOptions);
+        Demuxer(const char* fileName, AVInputFormat* inputFormat, AVDictionary *inputFormatOptions, AVFormatContext * aContainerContext);
+        ~Demuxer();
 
-		void DecodeBestAudioStream(FrameSink* frameSink);
-		void DecodeBestVideoStream(FrameSink* frameSink);
+        void DecodeBestAudioStream(FrameSink* frameSink);
+        void DecodeBestVideoStream(FrameSink* frameSink);
 
-		void DecodeAudioStream(int streamId, FrameSink* frameSink);
-		void DecodeVideoStream(int streamId, FrameSink* frameSink);
+        void DecodeAudioStream(int streamId, FrameSink* frameSink);
+        void DecodeVideoStream(int streamId, FrameSink* frameSink);
 
-		virtual void PreparePipeline();
-		virtual bool IsDone();
-		virtual void Step();
+        virtual void PreparePipeline();
+        virtual bool IsDone();
+        virtual void Step();
 
-		ContainerInfo GetInfo();
-		int GetFrameCount(int streamId);
+        ContainerInfo GetInfo();
+        int GetFrameCount(int streamId);
 
-		const char* GetFileName();
+        bool convertToRGB(int VideoStreamIndx, AVFormatContext *bAVFormatContext, AVCodecContext *bAVCodecContext, AVCodec *bAVCodec );
 
-	private:
+        const char* GetFileName();
 
-		bool done = false;
+    private:
 
-		const char* fileName;
+        bool done = false;
 
-		InputStream* GetInputStream(int index);
-		InputStream* GetInputStreamById(int streamId);
+        const char* fileName;
 
-		//std::vector<StreamInfo> GetStreamInfo(AVMediaType mediaType);
-		//StreamInfo CreateInfo(int streamIndex, AVStream* stream, AVCodec* codec);
+        InputStream* GetInputStream(int index);
+        InputStream* GetInputStreamById(int streamId);
 
-		InputStream** inputStreams = nullptr;
+        //std::vector<StreamInfo> GetStreamInfo(AVMediaType mediaType);
+        //StreamInfo CreateInfo(int streamIndex, AVStream* stream, AVCodec* codec);
 
-		AVFormatContext* containerContext = nullptr;
-		AVPacket* pkt = nullptr;
+        InputStream** inputStreams = nullptr;
 
-		void DecodePacket();
+        AVFormatContext* containerContext = nullptr;
+        AVPacket* pkt = nullptr;
 
-		void CleanUp();
-	};
+        void DecodePacket();
+
+        void CleanUp();
+    };
 }
