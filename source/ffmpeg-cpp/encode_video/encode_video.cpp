@@ -3,8 +3,8 @@
 
 // TODO : write other demos !
 // choose one case only. Else the build will be broken ...
-#define MJPEG_VIDEO
-//#define MPEG4_VIDEO
+//#define MJPEG_VIDEO
+#define MPEG4_VIDEO
 //#define MPEG2_VIDEO
 //#define H264_VIDEO
 
@@ -164,6 +164,23 @@ int main()
         //  lossless       better                 worse          worst
         codec->SetCrf(23);
 #endif
+
+#ifdef MPEG4_VIDEO
+        std::cerr << "Using MPEG4 Codec" << "\n";
+
+        MPEG4Codec* codec = new MPEG4Codec();
+
+        // Default is : 
+        // profile = main, crf = 10, preset = medium (default), tune = film or animation
+        // FIXME : the buffer size seems to NOT being set ?
+        codec->SetGenericOption("b", "4M");
+        codec->SetGenericOption("bit_rate", "2M");
+        codec->SetProfile("high10"); // baseline, main, high, high10, high422
+        codec->SetTune("film");  // film animation grain stillimage psnr ssim fastdecode zerolatency
+        codec->SetPreset("veryslow"); // fast, medium, slow slower, veryslow placebo
+        codec->SetCrf(23);
+#endif
+
 
 
 #ifdef MJPEG_VIDEO
