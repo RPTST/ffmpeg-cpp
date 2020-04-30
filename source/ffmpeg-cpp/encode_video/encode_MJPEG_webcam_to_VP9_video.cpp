@@ -76,7 +76,27 @@ int main()
 {
     avdevice_register_all();
 
-    // This example will take a raw audio file and encode it into as MP3.
+    // This example is a work in progress, means unfinished.
+    // DONE:
+    // - detect the webcam
+    // - set the right parameters (for instance, 1920x1080@30fps, Logitech C920 / C922 / Brio  (other webcams untested)
+    // - activate the webcam
+    // - create the stream
+    // - create the demuxer
+    // - create the frames
+    // - convert them into grey (type 5) .ppm
+    //
+    // - TODO:
+    // - convert YUV frames into RGB
+    // - initialize  the encoder and build the video at the end.
+    // - create the video (.mpg or whatever)
+    // - imrove
+    //
+    // GOAL : 
+    // This program aims to take the stream from a webcam  (mjpeg stream),
+    // turn it into raw frames, and encode it into as VP9 video (HEVC codec).
+
+
     try
     {
         // Create a muxer that will output the video as MKV.
