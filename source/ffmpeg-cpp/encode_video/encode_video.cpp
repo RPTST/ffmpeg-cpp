@@ -165,21 +165,6 @@ int main()
         codec->SetCrf(23);
 #endif
 
-#ifdef MPEG4_VIDEO
-        std::cerr << "Using MPEG4 Codec" << "\n";
-
-        MPEG4Codec* codec = new MPEG4Codec();
-
-        // Default is : 
-        // profile = main, crf = 10, preset = medium (default), tune = film or animation
-        // FIXME : the buffer size seems to NOT being set ?
-        codec->SetGenericOption("b", "4M");
-        codec->SetGenericOption("bit_rate", "2M");
-        codec->SetProfile("high10"); // baseline, main, high, high10, high422
-        codec->SetTune("film");  // film animation grain stillimage psnr ssim fastdecode zerolatency
-        codec->SetPreset("veryslow"); // fast, medium, slow slower, veryslow placebo
-        codec->SetCrf(23);
-#endif
 
 #ifdef MJPEG_VIDEO
         PGMFileSink* fileSink = new PGMFileSink();
