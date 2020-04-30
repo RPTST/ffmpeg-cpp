@@ -8,6 +8,20 @@ Changelog  Copyright Eric Bachard  2020/04/22
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 
+TODO : improve the demos (a bit confusing curently)
+Improved indentation
+Simplified the code
+Added convertToRGB()  method in the Demuxer.
+Added SetFileSink method in demuxer. Important second effect is that
+we simplified the parameters number when using RawVideoFileSource
+Continued to work at encode video from webcam
+
+Simplifified the interface.
+
+
+2020/04/30
+
+
 FIXED : can write frames (grey currently) from mjpeg webcam !
 
 RawVideoFileSource creation ... done
