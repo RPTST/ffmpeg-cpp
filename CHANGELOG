@@ -7,6 +7,11 @@ Changelog  Copyright Eric Bachard  2020/04/22
 "                                                                                    "
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
+FIXED ALL THE KNOWN ISSUES, EXCEPTE DONE: the current CMakefile.txt includes demo,
+thus they are included in the library (useless, and plain wrong). This problem is
+fixed in the main dir, at : https://framagit.org/ericb/ffmpeg-cpp2, where the 
+development continues.
+
 
 TODO : improve the demos (a bit confusing curently)
 Improved indentation
