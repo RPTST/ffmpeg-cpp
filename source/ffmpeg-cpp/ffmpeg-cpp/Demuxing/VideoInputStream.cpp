@@ -36,7 +36,7 @@ namespace ffmpegcpp
 		info.timeBase = tb;
 		info.frameRate = fr;
 
-		codecContext = avcodec_alloc_context3(NULL);
+		AVCodecContext* codecContext = avcodec_alloc_context3(NULL);
 		if (!codecContext) throw new FFmpegException("Failed to allocate temporary codec context.");
 		int ret = avcodec_parameters_to_context(codecContext, stream->codecpar);
 		if (ret < 0)

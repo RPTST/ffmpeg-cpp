@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ffmpeg-cpp/ffmpeg.h"
+#include "ffmpeg.h"
 
-#include "ffmpeg-cpp/OpenCodec.h"
+#include "OpenCodec.h"
 
 namespace ffmpegcpp
 {
@@ -25,7 +25,7 @@ namespace ffmpegcpp
 
 	protected:
 
-		AVCodecContext* m_codecContext;
+		AVCodecContext* codecContext = nullptr;
 
 		OpenCodec* Open();
 

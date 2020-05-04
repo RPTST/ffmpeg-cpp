@@ -1,7 +1,6 @@
 #include "Demuxer.h"
 #include "FFmpegException.h"
 #include "CodecDeducer.h"
-
 #include <string>
 #include <iostream>
 
@@ -15,18 +14,21 @@ namespace ffmpegcpp
     {
     }
 
-    Demuxer::Demuxer(const char* p_fileName, AVInputFormat* inputFormat, AVDictionary *format_opts)
+
+    Demuxer::Demuxer(const char* p_fileName, AVInputFormat* p_inputFormat, AVDictionary *p_format_opts)
     {
-        this->m_fileName = p_fileName;
+        this->m_fileName    = p_fileName;
 
-        // open input file, and allocate format context
-        int ret;
+        int ret = 0;// open input file, and allocate format context
 
-        if ((ret = avformat_open_input(&containerContext, m_fileName, inputFormat, &format_opts)) < 0)
+        if ((ret = avformat_open_input(&containerContext, p_fileName, p_inputFormat, &p_format_opts)) < 0)
         {
             CleanUp();
-            throw FFmpegException(std::string("Failed to open input container " + string(m_fileName)).c_str(), ret);
+            throw FFmpegException(std::string("Failed to open input container " + string(p_fileName)).c_str(), ret);
         }
+
+        this->options       = p_format_opts;
+        this->m_inputFormat = p_inputFormat;
 
         // retrieve stream information
         if ( (ret = (avformat_find_stream_info(containerContext, NULL))) < 0)
@@ -38,6 +40,17 @@ namespace ffmpegcpp
         inputStreams = new InputStream*[containerContext->nb_streams];
         for (unsigned int i = 0; i < containerContext->nb_streams; ++i)
         {
+/*
+            AVCodecParameters* par = containerContext->streams[i]->codecpar;
+
+            if  ((par->codec_type) == AVMEDIA_TYPE_VIDEO)
+            {
+                pAVCodec =  avcodec_find_encoder(containerContext->streams[i]->codecpar->codec_id);
+                m_width  = containerContext->streams[i]->codecpar->width;
+                m_height = containerContext->streams[i]->codecpar->height;
+                options  = containerContext->metadata;
+            }
+*/
             inputStreams[i] = nullptr;
         }
 
@@ -53,15 +66,57 @@ namespace ffmpegcpp
         pkt->size = 0;
     }
 
-    Demuxer::Demuxer(const char* p_fileName, AVInputFormat* inputFormat, AVDictionary *format_opts, AVFormatContext * aContainerContext)
+    Demuxer::Demuxer(const char* p_fileName, int d_width, int d_height, int d_framerate)
     {
-        this->m_fileName = p_fileName;
-                this->containerContext = aContainerContext;
+        m_fileName = p_fileName;
+        m_width  = d_width;
+        m_height = d_height;
+        m_framerate = d_framerate;
+        setVideoStreamDevice();
+    }
 
-        // open input file, and allocate format context
-        int ret;
 
-        if ((ret = avformat_open_input(&containerContext, m_fileName, inputFormat, &format_opts)) < 0)
+    void Demuxer::setVideoStreamDevice ()
+    {
+        int ret = 0;
+#ifdef _WIN32
+        // Fixed by the operating system
+        const char * input_device = "dshow"; // I'm using dshow when cross compiling :-)
+#elif defined(__linux__)
+        // libavutil, pixdesc.h
+        const char * pix_fmt_name = av_get_pix_fmt_name(AV_PIX_FMT_YUVJ420P); // = "mjpeg"
+        enum AVPixelFormat pix_name = av_get_pix_fmt("mjpeg");
+
+        cout<<"AVPixelFormat name of AV_PIX_FMT_YUVJ420P : " << pix_fmt_name << "\n";
+        cout<<"PixelFormat value for \"mjpeg\" : " << pix_name << "\n";
+
+        // Fixed by the operating system
+        const char * input_device = "v4l2";
+#endif
+        containerContext = avformat_alloc_context();
+        containerContext->video_codec_id = AV_CODEC_ID_MJPEG;
+
+        m_inputFormat = av_find_input_format(input_device);
+
+        // WORKS OK TOO
+        char videoSize[32];
+        sprintf(videoSize, "%dx%d", this->m_width, this->m_height);
+        av_dict_set(&options, "video_size", videoSize, 0);
+        //av_dict_set(&options, "video_size", "1920x1080", 0); // Other way. Other usual values 1280x720@30fps
+
+        const char * framerate_option_name = "framerate";
+        char frameRateValue[10];
+        sprintf(frameRateValue, "%d", this->m_framerate);
+
+        av_dict_set(&options, framerate_option_name, frameRateValue, 0);
+        std::cerr << "framerate_option_name :  " << framerate_option_name  << "\n";
+        std::cerr << "frameRateValue        :  " << frameRateValue  << "\n";
+//        av_dict_set(&options, "framerate", "30", 0);
+
+        av_dict_set(&options, "pixel_format", pix_fmt_name, 0);  //  "mjpeg" "yuvj420p"
+        av_dict_set(&options, "use_wallclock_as_timestamps", "1", 0);
+
+        if ((ret = avformat_open_input(&containerContext, m_fileName, m_inputFormat, &options)) < 0)
         {
             std::cerr << "Failed to open input container "  <<  "\n";
             CleanUp();
@@ -113,7 +168,7 @@ namespace ffmpegcpp
 
         // inspired from https://code.mythtv.org/trac/ticket/13186?cversion=0&cnum_hist=2
         AVCodecContext *pAVCodecContext = NULL;
-        AVCodec *pAVCodec = NULL;
+        pAVCodec = NULL;
         pAVCodec = avcodec_find_decoder(containerContext->streams[VideoStreamIndx]->codecpar->codec_id);
         pAVCodecContext = avcodec_alloc_context3(pAVCodec);
         avcodec_parameters_to_context(pAVCodecContext, containerContext->streams[VideoStreamIndx]->codecpar);
@@ -242,12 +297,12 @@ namespace ffmpegcpp
             return nullptr;
 
         AVStream* stream = containerContext->streams[streamIndex];
-        AVCodec* codec = CodecDeducer::DeduceDecoder(stream->codecpar->codec_id);
+        pAVCodec = CodecDeducer::DeduceDecoder(stream->codecpar->codec_id);
 
-        if (codec == nullptr)
+        if (pAVCodec == nullptr)
             return nullptr; // no codec found - we can't really do anything with this stream!
 
-        switch (codec->type)
+        switch (pAVCodec->type)
         {
             case AVMEDIA_TYPE_VIDEO:
                 inputStreams[streamIndex] = new VideoInputStream(containerContext, stream);

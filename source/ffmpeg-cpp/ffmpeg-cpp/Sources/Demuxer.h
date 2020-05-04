@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ffmpeg-cpp/ffmpeg.h"
+#include "ffmpeg.h"
 
-#include "ffmpeg-cpp/Demuxing/AudioInputStream.h"
-#include "ffmpeg-cpp/Demuxing/VideoInputStream.h"
-#include "ffmpeg-cpp/Demuxing/InputStream.h"
-#include "ffmpeg-cpp/Sources/InputSource.h"
-#include "ffmpeg-cpp/Info/ContainerInfo.h"
+#include "Demuxing/AudioInputStream.h"
+#include "Demuxing/VideoInputStream.h"
+#include "Demuxing/InputStream.h"
+#include "Sources/InputSource.h"
+#include "Info/ContainerInfo.h"
 
 namespace ffmpegcpp
 {
@@ -15,6 +15,7 @@ namespace ffmpegcpp
     public:
 
         Demuxer(const char* fileName);
+        Demuxer(const char* fileName, int width, int height, int framerate);
         Demuxer(const char* fileName, AVInputFormat* inputFormat, AVDictionary *inputFormatOptions);
         Demuxer(const char* fileName, AVInputFormat* inputFormat, AVDictionary *inputFormatOptions, AVFormatContext * aContainerContext);
         ~Demuxer();
@@ -34,6 +35,7 @@ namespace ffmpegcpp
 
         bool convertToRGB(int VideoStreamIndx, AVFormatContext *bAVFormatContext, AVCodecContext *bAVCodecContext, AVCodec *bAVCodec );
 
+        void setVideoStreamDevice();
         const char* GetFileName();
 
     private:
@@ -41,6 +43,16 @@ namespace ffmpegcpp
         bool done = false;
 
         const char* m_fileName;
+
+        int m_width;
+        int m_height;
+        int m_framerate;
+
+
+        AVFormatContext* pAVFormatContextIn;
+        AVDictionary * options;
+        AVCodec * pAVCodec;
+        AVInputFormat * m_inputFormat;
 
         InputStream* GetInputStream(int index);
         InputStream* GetInputStreamById(int streamId);

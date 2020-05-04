@@ -12,7 +12,7 @@ int main()
 	try
 	{
 		// Create a muxer that will output the video as MKV.
-		Muxer* muxer = new Muxer("filtered_video.mp4");
+		Muxer* muxer = new Muxer("filtered_video.mkv");
 
 		// Create a MPEG2 codec that will encode the raw data.
 //		VideoCodec* vcodec = new VideoCodec(AV_CODEC_ID_MPEG2VIDEO);
@@ -48,7 +48,9 @@ int main()
 
 		// Load a video from a container and send it to the filter first.
 		Demuxer* demuxer = new Demuxer("../samples/big_buck_bunny.mp4");
-                Demuxer* audioDemuxer = new Demuxer("../samples/AC_DC_Hells_Bells.mp3");
+
+                // Be carefull, the output video builds correctly or not, depending on the audio file. 
+                Demuxer* audioDemuxer = new Demuxer("../samples/DesiJourney.wav");
 
 		demuxer->DecodeBestVideoStream(filter);
                 audioDemuxer->DecodeBestAudioStream(aEncoder);
@@ -60,8 +62,8 @@ int main()
 		// Push all the remaining frames through.
 		while (!demuxer->IsDone())
 		{
-			demuxer->Step();
                         audioDemuxer->Step();
+			demuxer->Step();
 		}
 		
 		// Save everything to disk by closing the muxer.

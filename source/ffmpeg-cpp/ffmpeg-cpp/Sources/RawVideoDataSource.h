@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ffmpeg-cpp/ffmpeg.h"
-#include "ffmpeg-cpp/Frame Sinks/VideoFrameSink.h"
+#include "ffmpeg.h"
+#include "Frame Sinks/VideoFrameSink.h"
 
 namespace ffmpegcpp
 {
@@ -35,7 +35,7 @@ namespace ffmpegcpp
 
 		StreamData metaData;
 
-		AVFrame* frame = nullptr;
-		struct SwsContext* swsContext = nullptr;
+		AVFrame* frame;
+		struct SwsContext* swsContext;
 	};
 }

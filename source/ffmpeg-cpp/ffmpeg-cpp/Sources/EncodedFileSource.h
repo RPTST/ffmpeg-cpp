@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ffmpeg-cpp/ffmpeg.h"
-#include "ffmpeg-cpp/Frame Sinks/FrameSink.h"
+#include "ffmpeg.h"
+#include "Frame Sinks/FrameSink.h"
 #include "InputSource.h"
 
 namespace ffmpegcpp
@@ -26,11 +26,11 @@ namespace ffmpegcpp
 
 		bool done = false;
 
-		FrameSinkStream* m_output;
+		FrameSinkStream* output;
 		
 		AVCodecParserContext* parser = nullptr;
 
-		AVCodec* m_codec;
+		AVCodec* codec;
 		AVCodecContext* codecContext = nullptr;
 
 		int bufferSize;
@@ -38,7 +38,7 @@ namespace ffmpegcpp
 
 
 		AVFrame* decoded_frame = nullptr;
-		AVPacket* m_pkt = nullptr;
+		AVPacket* pkt = nullptr;
 		uint8_t* buffer = nullptr;
 
 		FILE* file;
