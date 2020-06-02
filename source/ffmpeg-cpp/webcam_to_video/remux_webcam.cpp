@@ -33,7 +33,7 @@ void record_Audio()
     const char * audioDeviceFormat = "alsa";
 
     Muxer* Amuxer  = new Muxer(audio_file);
-    int audioSampleRate = 48000;
+    int audioSampleRate = 44100;
     int audioChannels   = 2;
 
     AudioCodec         *   audioCodec = new AudioCodec(AV_CODEC_ID_AAC);
