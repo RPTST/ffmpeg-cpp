@@ -191,9 +191,8 @@ int main(void)
 #ifdef TEST
     std::remove(audio_file);
     std::remove(video_file);
-
  
-    bool failed = (!std::ifstream(audio_file) || !std::ifstream(video_file));
+    bool failed = (std::ifstream(audio_file) || std::ifstream(video_file));
 
     if(failed)
     {
