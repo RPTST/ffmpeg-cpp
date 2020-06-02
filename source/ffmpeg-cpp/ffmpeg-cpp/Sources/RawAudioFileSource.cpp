@@ -22,7 +22,7 @@ namespace ffmpegcpp
 
 		av_dict_set_int(&format_opts, "sample_rate", sampleRate, 0);
 		av_dict_set_int(&format_opts, "channels", channels, 0);
-		av_dict_set_int(&format_opts, "b", 256000, 0);
+		av_dict_set_int(&format_opts, "b", 128000, 0);
 		av_dict_set_int(&format_opts, "minrate", 400000, 0);
 		av_dict_set_int(&format_opts, "maxrate", 400000, 0);
 

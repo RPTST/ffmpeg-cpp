@@ -87,28 +87,30 @@ namespace ffmpegcpp
     void Demuxer::setAudioStreamDevice ()
     {
 
+        m_audio_opts = nullptr;
+
         // FIXME : remove unnecessary parameters
         av_dict_set_int(&m_audio_opts, "sample_rate", m_sampleRate, 0);
-        av_dict_set_int(&m_audio_opts, "minrate", 40000, 0);
-        av_dict_set_int(&m_audio_opts, "maxrate", 40000, 0);
+//        av_dict_set_int(&m_audio_opts, "minrate", 40000, 0);
+//        av_dict_set_int(&m_audio_opts, "maxrate", 40000, 0);
 
 // !!        av_dict_set_int(&m_audio_opts, "b", 128000, 0);
         av_dict_set_int(&m_audio_opts, "bit_rate", 64000, 0);
-        av_dict_set_int(&m_audio_opts, "profile", FF_PROFILE_AAC_LOW, 0);
+//        av_dict_set_int(&m_audio_opts, "profile", FF_PROFILE_AAC_LOW, 0);
         av_dict_set_int(&m_audio_opts, "time_base.num", 1 , 0);
         av_dict_set_int(&m_audio_opts, "time_base.den", m_sampleRate, 0);
 
-        av_dict_set_int(&m_audio_opts, "duration", 3600, 0);
+//        av_dict_set_int(&m_audio_opts, "duration", 3600, 0);
         // av_dict_set_int(&m_audio_opts, "thread_queue_size", 1024 , 0);
-        av_dict_set_int(&m_audio_opts, "threads", 0 , 0);
-        av_dict_set_int(&m_audio_opts, "frame_size", 1024, 0);
-        av_dict_set_int(&m_audio_opts, "frames", 32, 0);
+//        av_dict_set_int(&m_audio_opts, "threads", 0 , 0);
+//        av_dict_set_int(&m_audio_opts, "frame_size", 1024, 0);
+//        av_dict_set_int(&m_audio_opts, "frames", 32, 0);
 //!!        av_dict_set_int(&m_audio_opts, "format", AV_SAMPLE_FMT_S16, 0);
-        av_dict_set_int(&m_audio_opts, "format", AV_SAMPLE_FMT_S32P, 0);
-        av_dict_set    (&m_audio_opts, "movflags", "faststart", 0);
-        av_dict_set    (&m_audio_opts, "use_wallclock_as_timestamps", "1", 0);
+//        av_dict_set_int(&m_audio_opts, "format", AV_SAMPLE_FMT_S32P, 0);
+//        av_dict_set    (&m_audio_opts, "movflags", "faststart", 0);
+//        av_dict_set    (&m_audio_opts, "use_wallclock_as_timestamps", "1", 0);
         av_dict_set_int(&m_audio_opts, "channels", m_channels, 0);
-        av_dict_set    (&m_audio_opts, "stream_name", "webcam C922", 0);
+//        av_dict_set    (&m_audio_opts, "stream_name", "webcam C922", 0);
 
         int ret = 0;
 
