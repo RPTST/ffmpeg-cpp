@@ -5,6 +5,11 @@ FORKED FROM [Raveler/ffmpeg-cpp](https://github.com/Raveler/ffmpeg-cpp)
 This is the Linux port. Maybe the Windows version works, but I'm unsure, and I'd suggest you to go to the Raveler page ( [Raveler/ffmpeg-cpp](https://github.com/Raveler/ffmpeg-cpp) )
 
 
+Last change : one can record audio+video webcam (works with Logitech C922)
+
+TODO : 3 last 3 are missing in the video. Maybe some wrongvalue somewhere.
+
+
 # ffmpeg-cpp
 A clean C++ wrapper around the ffmpeg libraries which can be used in any C++ project or C# project (with DllImport or CLR). Makes the most commonly used functionality of FFmpeg easily available for any C++ projects with an easy-to-use interface. The full power of FFmpeg compacted in 10 lines of C++ code: if this sounds useful to you, read on!
 
@@ -33,7 +38,8 @@ I created a CMakefile from scratch, and the lib is now built straight away. I'll
 ## Demos
 
 Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMint, but whatever the distribution, this should work anywhere
-
+- [x] record webcam (audio+video) works. FIXME : 3 last seconds are missing ; maybe somewrong value somewhere or missing rescale
+- [x] record sound fraom webcam alone works very well
 - [x] decode_audio: **works OK**. The audio part is extracted as a data blob.
 - [x] decode_video: **works OK** ! big_buck_bunny.mp4 results in 1440 grey images (who can be assembled to retrieve the video)
 - [x] encode_audio: **works OK** //**don't forget to install libmp3lame AND to add --enable-libmp3lame at configure time with FFMPEG!**
