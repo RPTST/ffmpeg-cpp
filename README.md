@@ -7,7 +7,7 @@ This is the Linux port. Maybe the Windows version works, but I'm unsure, and I'd
 
 Last change : one can record audio+video webcam (works with Logitech C922)
 
-TODO : 3 last 3 are missing in the video. Maybe some wrongvalue somewhere.
+TODO : 3 last seconds are missing in the video. Maybe some wrong value somewhere.
 
 
 # ffmpeg-cpp
