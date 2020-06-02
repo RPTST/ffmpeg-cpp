@@ -189,8 +189,6 @@ int main(void)
 
 #define TEST
 #ifdef TEST
-    std::remove("file1.txt"); // delete file
-
     std::remove(audio_file);
     std::remove(video_file);
 
