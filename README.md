@@ -38,8 +38,8 @@ I created a CMakefile from scratch, and the lib is now built straight away. I'll
 ## Demos
 
 Below, the example tested working on Linux (Intel x86_64, kernel4.15.x) LinuxMint, but whatever the distribution, this should work anywhere
-- [x] record webcam (audio+video) works. FIXME : 3 last seconds are missing ; maybe somewrong value somewhere or missing rescale
-- [x] record sound fraom webcam alone works very well
+- [x] record webcam (audio+video) **works OK**  FIXME : 3 last seconds are missing ; maybe somewrong value somewhere or missing rescale
+- [x] record sound only from webcam **works OK** works very well  (alsa on Linux, hw:1,0 or pulse work)
 - [x] decode_audio: **works OK**. The audio part is extracted as a data blob.
 - [x] decode_video: **works OK** ! big_buck_bunny.mp4 results in 1440 grey images (who can be assembled to retrieve the video)
 - [x] encode_audio: **works OK** //**don't forget to install libmp3lame AND to add --enable-libmp3lame at configure time with FFMPEG!**
