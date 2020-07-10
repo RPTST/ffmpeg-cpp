@@ -5,7 +5,8 @@ FORKED FROM [Raveler/ffmpeg-cpp](https://github.com/Raveler/ffmpeg-cpp)
 This is the Linux port. Maybe the Windows version works, but I'm unsure, and I'd suggest you to go to the Raveler page ( [Raveler/ffmpeg-cpp](https://github.com/Raveler/ffmpeg-cpp) )
 
 
-Last change : one can record audio+video webcam (works with Logitech C922)
+Last change : one can record audio+video from any webcam, with sound and video synchronized. Works with Logitech C922 (e.g.)
+
 
 TODO : 3 last seconds are missing in the video. Maybe some wrong value somewhere.
 
